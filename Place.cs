@@ -8,6 +8,7 @@
 
     internal class Place
     {
+        public static int totalPlaceNumber = 0;
         private int Id;
         private PlaceType Type;
         private string Name;
@@ -44,6 +45,7 @@
             HasGarden = hasGarden;
             HasPrivateBeach = hasPrivateBeach;
             HasParkingArea = hasParkingArea;
+            totalPlaceNumber = totalPlaceNumber + 1;
         }
 
         public int GetGetId()

@@ -2,35 +2,44 @@
 {
     internal class ReservationManager
     {
-        private List<Place> PlaceList = new List<Place>();
-        private List<Reservation> ReservationList = new List<Reservation>();
+        private static List<Place> PlaceList = new List<Place>();
+        private static List<Reservation> ReservationList = new List<Reservation>();
 
-        public void AddPlace(Place place)
+        public static void PrintPlaceList()
+        {
+            Console.WriteLine("-----------All Places---------");
+            for(int i = 0; i < PlaceList.Count; i++)
+            {
+                Console.WriteLine((i+1)+"- "+PlaceList[i].GetName()+"("+ PlaceList[i].GetAddress()+ ")");
+            }
+        }
+
+        public static void AddPlace(Place place)
         {
             PlaceList.Add(place);
         }
 
-        public void RemovePlace(Place place)
+        public static void RemovePlace(Place place)
         {
             PlaceList.Remove(place);
         }
 
-        public void AddReservation(Reservation reservation)
+        public static void AddReservation(Reservation reservation)
         {
             ReservationList.Add(reservation);
         }
 
-        public void RemoveReservation(Reservation reservation)
+        public static void RemoveReservation(Reservation reservation)
         {
             ReservationList.Remove(reservation);
         }
 
-        public void CancelReservation(int reservationId)
+        public static void CancelReservation(int reservationId)
         {
             ReservationList.RemoveAll(r => r.GetId() == reservationId);
         }
 
-        public Reservation? GetReservation(int reservationId)
+        public static Reservation? GetReservation(int reservationId)
         {
             foreach (Reservation reservation in ReservationList)
             {
@@ -43,12 +52,12 @@
             return null;
         }
 
-        public List<Place> GetAvailablePlaces(string address, DateTime startDate, DateTime endDate)
+        public static List<Place> GetAvailablePlaces(string address, DateTime startDate, DateTime endDate)
         {
             return (List<Place>)PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate) && p.GetAddress().Contains(address));
         }
 
-        public List<Place> GetAvailablePlacesWithFilter(PlaceFilter placeFilter)
+        public static List<Place> GetAvailablePlacesWithFilter(PlaceFilter placeFilter)
         {
             return (List<Place>)PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && (placeFilter.StartDate != null && r.GetStartDate() >= placeFilter.StartDate) && (placeFilter.EndDate != null && r.GetEndDate() < placeFilter.EndDate)) &&
             (placeFilter.Address != null && p.GetAddress().Contains(placeFilter.Address)) &&
