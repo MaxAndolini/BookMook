@@ -23,5 +23,27 @@
         {
             Console.WriteLine("Menu");
         }
+        public string GetName()
+        {
+            return Name;
+        }
+        public string GetEmailAddress()
+        {
+            return EmailAddress;
+        }
+        public string GetPassword()
+        {
+            return Password;
+        }
+        public Wallet GetWallet()
+        {
+            return Wallet;
+        }
+        public CreditCard GetCreditCard()
+        {
+            return CreditCard;
+        }
+
+        
     }
 }

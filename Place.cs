@@ -11,6 +11,7 @@
         public static int totalPlaceNumber = 0;
         private int Id;
         private PlaceType Type;
+        private Renter Renter;
         private string Name;
         private double Price;
         private string Address;
@@ -28,10 +29,10 @@
         private List<string> CommentList = new();
         private List<int> RateList = new();
 
-        public Place(int id, PlaceType type, string name, double price, string address, int guestLimit, int flatNo, int roomNumber, bool hasFreeWifi, bool hasSpareBathroom, bool isSmookingAllowed, bool hasPool, bool hasGarden, bool hasPrivateBeach, bool hasParkingArea)
+        public Place(int id, PlaceType type, Renter renter, string name, double price, string address, int guestLimit, int flatNo, int roomNumber, bool hasFreeWifi, bool hasSpareBathroom, bool isSmookingAllowed, bool hasPool, bool hasGarden, bool hasPrivateBeach, bool hasParkingArea)
         {
             Id = id;
-            Type = type;
+            Renter = renter;
             Name = name;
             Price = price;
             Address = address;
@@ -66,6 +67,11 @@
         public void SetType(PlaceType value)
         {
             Type = value;
+        }
+
+        public Renter GetRenter()
+        {
+            return Renter;
         }
 
         public string GetName()
@@ -256,7 +262,23 @@
 
         public override string ToString()
         {
-            return "Name: " + Name;
+            return ("------Place(id:"+Id+")-----\n" +
+                "Name : " + GetName() +
+                "\nPlace Type : " + GetType() +
+                "\nPrice : " + GetPrice() +
+                "\nAddress : " + GetAddress() +
+                "\nGuest Limit : " + GetGuestLimit() +
+                "\nFlat No : " + GetFlatNo() +
+                "\nRoomNumber : " + GetRoomNumber() +
+                "\nFree wifi : " + (HasFreeWifi ? "Yes" : "No") +
+                "\nSpare Bathroom : " + (HasSpareBathroom ? "Yes" : "No") +
+                "\nSmooking Allowed : " + (IsSmookingAllowed ? "Yes" : "No") +
+                "\nSwimming Pool : " + (HasPool ? "Yes" : "No") +
+                "\nGarden : " + (HasGarden ? "Yes" : "No") +
+                "\nPrivate Beach : " + (HasPrivateBeach ? "Yes" : "No") +
+                "\nParking Area : " + (HasParkingArea ? "Yes" : "No") +
+                "\n----------------------");
+            
         }
     }
 }

@@ -12,31 +12,37 @@
             {
                 Console.WriteLine((i+1)+"- "+PlaceList[i].GetName()+"("+ PlaceList[i].GetAddress()+ ")");
             }
+            Console.WriteLine("------------------------------");
         }
 
         public static void AddPlace(Place place)
         {
             PlaceList.Add(place);
+            Console.WriteLine("The Place ADDED successfully ✓");
         }
 
         public static void RemovePlace(Place place)
         {
             PlaceList.Remove(place);
+            Console.WriteLine("The Place REMOVED successfully ✓");
         }
 
         public static void AddReservation(Reservation reservation)
         {
             ReservationList.Add(reservation);
+            Console.WriteLine("The Reservation is DONE ✓");
         }
 
         public static void RemoveReservation(Reservation reservation)
         {
             ReservationList.Remove(reservation);
+            Console.WriteLine("The Reservation REMOVED successfully ✓");
         }
 
         public static void CancelReservation(int reservationId)
         {
             ReservationList.RemoveAll(r => r.GetId() == reservationId);
+            Console.WriteLine("The Reservation Canceled successfully ✓");
         }
 
         public static Reservation? GetReservation(int reservationId)
@@ -69,6 +75,15 @@
             (placeFilter.HasGarden != null && p.GetHasGarden() == placeFilter.HasGarden) &&
             (placeFilter.PrivateBeach != null && p.GetHasPrivateBeach() == placeFilter.PrivateBeach) &&
             (placeFilter.ParkingArea != null && p.GetHasParkingArea() == placeFilter.ParkingArea));
+        }
+        public static List<Reservation> GetReservationList()
+        {
+            return ReservationList;
+        }
+
+        public static List<Place> GetPlaceList()
+        {
+            return PlaceList;
         }
     }
 }

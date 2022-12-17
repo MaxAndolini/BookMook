@@ -115,14 +115,23 @@
             TotalPrice = value;
         }
 
-        public void PrintReservationInfo()
-        {
-            Console.WriteLine("Name: " + TotalPrice);
-        }
+        
 
         public override string ToString()
         {
-            return "Name";
+            return ("------------Reservation(id:" + Id + ")------------\n" +
+                Place.ToString() +
+                Renter.GetInformation() +
+                Rentee.GetInformation() +
+                "----------------------------------------------");
+
         }
+
+        public string GetShortInfo()
+        {
+            return ("Place: " + Place.GetName() + ", Renter: " + Renter.GetName() + ", Rentee: " + Rentee.GetName() + ", Reservation Id:" + Id);
+        }
+
+
     }
 }

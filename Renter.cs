@@ -3,9 +3,11 @@
     internal class Renter : Customer
     {
         private List<Place> MyPlaces;
+       
 
         public Renter(int id, string name, string emailAddress, string password, Wallet wallet, CreditCard creditCard, List<Place> myPlaces) : base(id, name, emailAddress, password, wallet, creditCard)
         {
+           
             MyPlaces = myPlaces;
         }
 
@@ -24,13 +26,16 @@
 
         public override void ShowMenu()
         {
-            Console.WriteLine("--------Menu----------\n" +
+            while (true)
+            {
+                Console.WriteLine("--------Menu for " + Name + "----------\n" +
                 "1- Show All Places\n" +
                 "2- Show My Places\n" +
                 "3- Show My Reserved Places\n" +
                 "4- Add new Place\n" +
                 "5- Remove Place\n" +
                 "6- Cancel Reservation\n" +
+                "0- To Quit\n" +
                 "----------------------\n" +
                 "Please select one of the options");
             String input = Console.ReadLine();
@@ -41,12 +46,47 @@
             }
             else if (input == "2")
             {
+                Console.WriteLine("-----------My Places---------");
+                for (int i = 0; i < MyPlaces.Count; i++)
+                {
+                    Console.WriteLine((i + 1) + "- " + MyPlaces[i].GetName() + "(" + MyPlaces[i].GetAddress() + ")");
+                }
+                Console.WriteLine("------------------------------");
 
             }
             else if (input == "3")
             {
-                
-            }
+                    List<Reservation> allReservationsList = ReservationManager.GetReservationList();
+                    List<Reservation> myReservationsList = new List<Reservation>();
+                    foreach (Reservation reservation in allReservationsList)
+                    {
+                        int counter = 0;
+                        if (reservation.GetRenter().Id == Id)
+                        {
+                            Console.WriteLine((counter + 1) + "- " + reservation.GetShortInfo());
+                            myReservationsList.Add(reservation);
+                            counter++;
+                        }
+                    }
+                    if(myReservationsList.Count > 0)
+                    {
+                        Console.WriteLine("----------------------");
+                        Console.WriteLine("Select reservation to see the information! Enter selection:");
+                        string selection = Console.ReadLine();
+                        if (Int32.Parse(selection) <= myReservationsList.Count)
+                        {
+                            Console.WriteLine(myReservationsList[Int32.Parse(selection) - 1].ToString());
+
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("There is not any active reservation!!!!");
+                    }
+                    
+                    
+
+                }
             else if (input == "4")
             {
                 //ENUM TYPE INPUT
@@ -378,8 +418,9 @@
                     }
                 }
 
-                Place new_place = new Place(Place.totalPlaceNumber, place_type, name, price, address, guest_limit, flat_no, room_number, has_free_wifi, has_spare_bathroom,is_smoking_allowed, has_pool, has_garden, has_private_beach, has_parking_area);
-                ReservationManager.AddPlace(new_place);
+                Place new_place = new Place(Place.totalPlaceNumber, place_type,this, name, price, address, guest_limit, flat_no, room_number, has_free_wifi, has_spare_bathroom,is_smoking_allowed, has_pool, has_garden, has_private_beach, has_parking_area);
+                    MyPlaces.Add(new_place);
+                    ReservationManager.AddPlace(new_place);
 
             }
             else if (input == "5")
@@ -390,11 +431,25 @@
             {
 
             }
+            else if (input == "0")
+            {
+                break;
+            }
             else
             {
                 Console.WriteLine("Invalid Input!!!!!!!!!");
             }
+        
+
+            }
         }
+        public string GetInformation()
+        {
+            return ("------Renter(id:" + Id + ")-----" +
+                "\nName:" + Name +
+                "\nEmail address: " + EmailAddress +
+                "\n----------------------\n");
+        }
+
     }
-    
 }
