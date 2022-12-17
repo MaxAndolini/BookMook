@@ -31,7 +31,7 @@
 
         public Place(int id, PlaceType type, Renter renter, string name, double price, string address, int guestLimit, int flatNo, int roomNumber, bool hasFreeWifi, bool hasSpareBathroom, bool isSmookingAllowed, bool hasPool, bool hasGarden, bool hasPrivateBeach, bool hasParkingArea)
         {
-            TotalPlaceNumber = TotalPlaceNumber + 1;
+            TotalPlaceNumber++;
             Id = id;
             Type = type;
             Renter = renter;
@@ -285,6 +285,7 @@
                 "\nParking Area : " + (HasParkingArea ? "Yes" : "No") +
                 "\n----------------------");
         }
+
         public string GetShortInfo()
         {
             return "Name: " + Name + ", Address: " + Address + ", Price: " + Price;

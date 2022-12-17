@@ -1,19 +1,12 @@
-﻿using System.Globalization;
-
-namespace BookMook
+﻿namespace BookMook
 {
     internal class Rentee : Customer
     {
-        
         private List<Reservation> MyReservations = new();
 
         public Rentee(int id, string name, string emailAddress, string password, Wallet wallet, CreditCard creditCard) : base(id, name, emailAddress, password, wallet, creditCard)
         {
         }
-
-        
-
-
 
         public void ShowMyReservationList()
         {
@@ -74,7 +67,7 @@ namespace BookMook
                             if (selection2 == "1")
                             {
                                 //Burada başlangıç ve çıkış tarihine göre kontrol edip sonrasında reservasyonu gerçekleştirilecek kod yazılmalı.
-                                
+
                                 /*
                                 Console.WriteLine("Please write down the star date and end date of your reservation\n");
                                 Console.WriteLine("Start date :");
@@ -125,7 +118,7 @@ namespace BookMook
                     }
 
                 }
-                
+
 
                 else if (input == "0")
                 {

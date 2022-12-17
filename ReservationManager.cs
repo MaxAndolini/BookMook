@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
-
-namespace BookMook
+﻿namespace BookMook
 {
     internal class ReservationManager
     {
@@ -44,7 +41,7 @@ namespace BookMook
 
         public static void RemovePlace(int placeId)
         {
-            var place = PlaceList.FirstOrDefault(m => m.GetId() == placeId);
+            var place = GetPlace(placeId);
 
             if (place == null)
             {
@@ -53,6 +50,11 @@ namespace BookMook
             }
 
             RemovePlace(place);
+        }
+
+        public static Place? GetPlace(int placeId)
+        {
+            return PlaceList.FirstOrDefault(m => m.GetId() == placeId);
         }
 
         public static void AddReservation(Reservation reservation)
@@ -81,7 +83,7 @@ namespace BookMook
 
         public static void RemoveReservation(int reservationId)
         {
-            var reservation = ReservationList.FirstOrDefault(m => m.GetId() == reservationId);
+            var reservation = GetReservation(reservationId);
 
             if (reservation == null)
             {
@@ -94,26 +96,18 @@ namespace BookMook
 
         public static Reservation? GetReservation(int reservationId)
         {
-            foreach (Reservation reservation in ReservationList)
-            {
-                if (reservation.GetId() == reservationId)
-                {
-                    return reservation;
-                }
-            }
-
-            return null;
+            return ReservationList.FirstOrDefault(m => m.GetId() == reservationId);
         }
 
         public static List<Place> GetAvailablePlaces(string address, DateTime startDate, DateTime endDate)
         {
-            return (List <Place>)PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate) 
-                                                                  && p.GetAddress().Contains(address));
+            return PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate)
+                                                                  && p.GetAddress().Contains(address)).ToList();
         }
 
         public static List<Place> GetAvailablePlacesWithFilter(PlaceFilter placeFilter)
         {
-            return (List<Place>)PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && (placeFilter.StartDate != null && r.GetStartDate() >= placeFilter.StartDate) && (placeFilter.EndDate != null && r.GetEndDate() < placeFilter.EndDate)) &&
+            return PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && (placeFilter.StartDate != null && r.GetStartDate() >= placeFilter.StartDate) && (placeFilter.EndDate != null && r.GetEndDate() < placeFilter.EndDate)) &&
             (placeFilter.Address != null && p.GetAddress().Contains(placeFilter.Address)) &&
             (placeFilter.GuestNumber != null && p.GetGuestLimit() <= placeFilter.GuestNumber) &&
             (placeFilter.RoomNumber != null && p.GetRoomNumber() == placeFilter.RoomNumber) &&
@@ -122,7 +116,7 @@ namespace BookMook
             (placeFilter.HasPool != null && p.GetHasPool() == placeFilter.HasPool) &&
             (placeFilter.HasGarden != null && p.GetHasGarden() == placeFilter.HasGarden) &&
             (placeFilter.PrivateBeach != null && p.GetHasPrivateBeach() == placeFilter.PrivateBeach) &&
-            (placeFilter.ParkingArea != null && p.GetHasParkingArea() == placeFilter.ParkingArea));
+            (placeFilter.ParkingArea != null && p.GetHasParkingArea() == placeFilter.ParkingArea)).ToList();
         }
 
         public static List<Reservation> GetReservationList()

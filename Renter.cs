@@ -23,7 +23,7 @@
             //Rentee ile renter ı ortak bir pakete alıp , Rentee nin içindeki MyReservationListi 
             //protected yapıp , bu metodun içinde çağırdıktan sonra MyPlaces ile eşleşiyor mu diye
             //kontrol edip , eğer eşleşiyorsa bir listeye atıp onu da print ettirip bitirebiliriz.
-            
+
 
         }
 
@@ -55,7 +55,7 @@
 
         public void RemovePlace(int placeId)
         {
-            var place = MyPlaces.FirstOrDefault(m => m.GetId() == placeId);
+            var place = GetPlace(placeId);
 
             if (place == null)
             {
@@ -64,6 +64,11 @@
             }
 
             RemovePlace(place);
+        }
+
+        public Place? GetPlace(int placeId)
+        {
+            return MyPlaces.FirstOrDefault(m => m.GetId() == placeId);
         }
 
         public override void ShowMenu()
@@ -104,7 +109,7 @@
                 }
                 else if (input == "2")
                 {
-                    
+
                     Console.WriteLine("------------------------------");
                     if (MyPlaces.Count > 0)
                     {
@@ -114,9 +119,9 @@
                             Console.WriteLine("----------------------");
                             Console.WriteLine("Select any place to see the detailed information(0 to quit)! Enter selection:");
                             string selection = Console.ReadLine();
-                            if(selection == "0")
+                            if (selection == "0")
                             {
-                                break ;
+                                break;
                             }
                             if (Int32.Parse(selection) <= MyPlaces.Count)
                             {
@@ -128,14 +133,14 @@
                             if (selection2 == "1")
                             {
                                 RemovePlace(MyPlaces[Int32.Parse(selection) - 1]);
-                             
+
                             }
                             else
                             {
                                 //Leave empty for now
                             }
                         }
-                        
+
 
                     }
 
@@ -510,15 +515,15 @@
                 }
                 else if (input == "5")
                 {
-                 // bunu 2. madde de yapmışız gibi duruyor 
+                    // bunu 2. madde de yapmışız gibi duruyor 
                 }
                 else if (input == "6")
                 {
-               // ShowMyReservations();
-                // elimizdeki rezerve edilmiş yerleri görüp sonra bir tanesini seçtikten sonra
-                // neden bıraktığımıza Placenin comment listine ekledikten sonra remove ederiz 
-                
-               
+                    // ShowMyReservations();
+                    // elimizdeki rezerve edilmiş yerleri görüp sonra bir tanesini seçtikten sonra
+                    // neden bıraktığımıza Placenin comment listine ekledikten sonra remove ederiz 
+
+
                 }
                 else if (input == "0")
                 {
