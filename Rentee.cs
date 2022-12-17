@@ -8,16 +8,16 @@
         {
         }
 
-        public void PrintMyReservations()
-        {
-            foreach (Reservation reservation in MyReservations)
-            {
-                Console.WriteLine(reservation);
-            }
-        }
+
 
         public void ShowMyReservationList()
         {
+            int counter = 0;
+            foreach (Reservation reservation in MyReservations)
+            {
+                Console.WriteLine((counter + 1) + "- " + reservation.GetShortInfo());
+                counter++;
+            }
 
         }
 
@@ -44,7 +44,6 @@
                 Console.WriteLine("--------Menu for " + Name + "----------\n" +
                 "1- Show All Places\n" +
                 "2- Show My Reservations\n" +
-                "3- Cancel Reservation\n" +
                 "0- To Quit\n" +
                 "----------------------\n" +
                 "Please select one of the options");
@@ -84,25 +83,28 @@
 
                 else if (input == "2")
                 {
-                    int counter = 0;
-                    foreach (Reservation reservation in MyReservations)
-                    {
-                        Console.WriteLine((counter + 1) + "- " + reservation.GetShortInfo());
-                        counter++;
-                    }
+                    ShowMyReservationList();
                     Console.WriteLine("----------------------");
                     Console.WriteLine("Select reservation to see the information! Enter selection:");
                     string selection = Console.ReadLine();
                     if (Int32.Parse(selection) <= MyReservations.Count)
                     {
                         Console.WriteLine(MyReservations[Int32.Parse(selection) - 1].ToString());
+                        Console.WriteLine("Do you want to cancel this reservation ? (1 for YES, 2 for NO)");  // Maybe we can add changing the reservtion details option later(such as Start or End dates)
+                        string selection2 = Console.ReadLine();
+                        if (selection2 == "1")
+                        {
+                            ReservationManager.RemoveReservation(MyReservations[Int32.Parse(selection) - 1]);
+                            MyReservations.Remove(MyReservations[Int32.Parse(selection) - 1]);
+                        }
+                        else
+                        {
+                            //Leave empty for now
+                        }
                     }
 
                 }
-                else if (input == "3")
-                {
-
-                }
+                
 
                 else if (input == "0")
                 {

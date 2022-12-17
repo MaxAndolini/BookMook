@@ -10,9 +10,11 @@
 
         public void PrintMyPlaces()
         {
+            int counter = 0;
             foreach (Place place in MyPlaces)
             {
-                Console.WriteLine(place);
+                Console.WriteLine((counter + 1) + "- " + place.GetShortInfo());
+                counter++;
             }
         }
 
@@ -30,6 +32,7 @@
             }
 
             MyPlaces.Add(place);
+            ReservationManager.GetPlaceList().Add(place);
             Console.WriteLine(place.GetName() + " is successfully added to the list ✓");
         }
 
@@ -42,6 +45,7 @@
             }
 
             MyPlaces.Remove(place);
+            ReservationManager.GetPlaceList().Remove(place);
             Console.WriteLine(place.GetName() + " is successfully removed in the list ✓");
         }
 
@@ -75,17 +79,61 @@
                 String input = Console.ReadLine();
                 if (input == "1")
                 {
-                    ReservationManager.PrintPlaceList();
+                    while (true)
+                    {
+                        ReservationManager.PrintPlaceList();
+                        Console.WriteLine("----------------------");
+                        Console.WriteLine("Select any place to see the detailed information!(0 to quit) Enter selection:");
+                        string selection = Console.ReadLine();
+                        if (selection == "0")
+                        {
+                            break;
+                        }
+                        if (Int32.Parse(selection) <= ReservationManager.GetPlaceList().Count)
+                        {
+                            Console.WriteLine(ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].ToString());
+
+                        }
+                        Console.WriteLine("----------------------");
+                    }
 
                 }
                 else if (input == "2")
                 {
-                    Console.WriteLine("-----------My Places---------");
-                    for (int i = 0; i < MyPlaces.Count; i++)
-                    {
-                        Console.WriteLine((i + 1) + "- " + MyPlaces[i].GetName() + "(" + MyPlaces[i].GetAddress() + ")");
-                    }
+                    
                     Console.WriteLine("------------------------------");
+                    if (MyPlaces.Count > 0)
+                    {
+                        while (true)
+                        {
+                            PrintMyPlaces();
+                            Console.WriteLine("----------------------");
+                            Console.WriteLine("Select any place to see the detailed information(0 to quit)! Enter selection:");
+                            string selection = Console.ReadLine();
+                            if(selection == "0")
+                            {
+                                break ;
+                            }
+                            if (Int32.Parse(selection) <= MyPlaces.Count)
+                            {
+                                Console.WriteLine(MyPlaces[Int32.Parse(selection) - 1].ToString());
+
+                            }
+                            Console.WriteLine("Do you want to delete this place ? (1 for YES, 2 for NO)");  // Maybe we can add changing the reservtion details option later(such as Start or End dates)
+                            string selection2 = Console.ReadLine();
+                            if (selection2 == "1")
+                            {
+                                RemovePlace(MyPlaces[Int32.Parse(selection) - 1]);
+                             
+                            }
+                            else
+                            {
+                                //Leave empty for now
+                            }
+                        }
+                        
+
+                    }
 
                 }
                 else if (input == "3")

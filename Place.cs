@@ -285,5 +285,9 @@
                 "\nParking Area : " + (HasParkingArea ? "Yes" : "No") +
                 "\n----------------------");
         }
+        public string GetShortInfo()
+        {
+            return "Name: " + Name + ", Address: " + Address + ", Price: " + Price;
+        }
     }
 }
