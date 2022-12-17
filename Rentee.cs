@@ -1,12 +1,17 @@
-﻿namespace BookMook
+﻿using System.Globalization;
+
+namespace BookMook
 {
     internal class Rentee : Customer
     {
+        
         private List<Reservation> MyReservations = new();
 
         public Rentee(int id, string name, string emailAddress, string password, Wallet wallet, CreditCard creditCard) : base(id, name, emailAddress, password, wallet, creditCard)
         {
         }
+
+        
 
 
 
@@ -63,12 +68,28 @@
                         if (Int32.Parse(selection) <= ReservationManager.GetPlaceList().Count)
                         {
                             Console.WriteLine(ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].ToString());
-                            Console.WriteLine("Do you want to reserve this place ?(1 for YES, 2 for NO)");
+                            Console.WriteLine("Do you want to check availability of this place ?(1 for YES, 2 for NO)");
 
                             string selection2 = Console.ReadLine();
                             if (selection2 == "1")
                             {
                                 //Burada başlangıç ve çıkış tarihine göre kontrol edip sonrasında reservasyonu gerçekleştirilecek kod yazılmalı.
+                                
+                                /*
+                                Console.WriteLine("Please write down the star date and end date of your reservation\n");
+                                Console.WriteLine("Start date :");
+                                string Date = Console.ReadLine();
+                                string format = "dd-MM-yyyy";
+                                DateTime startDate = DateTime.ParseExact(Date, format, CultureInfo.InvariantCulture);
+
+                                Console.WriteLine("End date :");
+                                string date = Console.ReadLine();
+                             
+                                DateTime endDate = DateTime.ParseExact(date, format, CultureInfo.InvariantCulture);
+                                ReservationManager.GetAvailablePlaces(
+                                    ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].GetAddress(), startDate, endDate);
+                                ReservationManager.AddReservation(ReservationManager.GetReservation(ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].GetId()));
+                               */
                             }
                             else
                             {

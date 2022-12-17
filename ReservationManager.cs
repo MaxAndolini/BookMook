@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 
 namespace BookMook
 {
@@ -106,7 +107,8 @@ namespace BookMook
 
         public static List<Place> GetAvailablePlaces(string address, DateTime startDate, DateTime endDate)
         {
-            return (List<Place>)PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate) && p.GetAddress().Contains(address));
+            return (List <Place>)PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate) 
+                                                                  && p.GetAddress().Contains(address));
         }
 
         public static List<Place> GetAvailablePlacesWithFilter(PlaceFilter placeFilter)

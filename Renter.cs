@@ -20,6 +20,10 @@
 
         public void ShowMyReservations()
         {
+            //Rentee ile renter ı ortak bir pakete alıp , Rentee nin içindeki MyReservationListi 
+            //protected yapıp , bu metodun içinde çağırdıktan sonra MyPlaces ile eşleşiyor mu diye
+            //kontrol edip , eğer eşleşiyorsa bir listeye atıp onu da print ettirip bitirebiliriz.
+            
 
         }
 
@@ -506,11 +510,15 @@
                 }
                 else if (input == "5")
                 {
-
+                 // bunu 2. madde de yapmışız gibi duruyor 
                 }
                 else if (input == "6")
                 {
-
+               // ShowMyReservations();
+                // elimizdeki rezerve edilmiş yerleri görüp sonra bir tanesini seçtikten sonra
+                // neden bıraktığımıza Placenin comment listine ekledikten sonra remove ederiz 
+                
+               
                 }
                 else if (input == "0")
                 {
