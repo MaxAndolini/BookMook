@@ -19,31 +19,39 @@
             CreditCard = creditCard;
         }
 
-        public virtual void ShowMenu()
+        public int GetId()
         {
-            Console.WriteLine("Menu");
+            return Id;
         }
+
         public string GetName()
         {
             return Name;
         }
+
         public string GetEmailAddress()
         {
             return EmailAddress;
         }
+
         public string GetPassword()
         {
             return Password;
         }
+
         public Wallet GetWallet()
         {
             return Wallet;
         }
+
         public CreditCard GetCreditCard()
         {
             return CreditCard;
         }
 
-        
+        public virtual void ShowMenu()
+        {
+            Console.WriteLine("Menu");
+        }
     }
 }

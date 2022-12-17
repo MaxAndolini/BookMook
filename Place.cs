@@ -8,7 +8,7 @@
 
     internal class Place
     {
-        public static int totalPlaceNumber = 0;
+        public static int TotalPlaceNumber = 0;
         private int Id;
         private PlaceType Type;
         private Renter Renter;
@@ -31,7 +31,9 @@
 
         public Place(int id, PlaceType type, Renter renter, string name, double price, string address, int guestLimit, int flatNo, int roomNumber, bool hasFreeWifi, bool hasSpareBathroom, bool isSmookingAllowed, bool hasPool, bool hasGarden, bool hasPrivateBeach, bool hasParkingArea)
         {
+            TotalPlaceNumber = TotalPlaceNumber + 1;
             Id = id;
+            Type = type;
             Renter = renter;
             Name = name;
             Price = price;
@@ -46,10 +48,9 @@
             HasGarden = hasGarden;
             HasPrivateBeach = hasPrivateBeach;
             HasParkingArea = hasParkingArea;
-            totalPlaceNumber = totalPlaceNumber + 1;
         }
 
-        public int GetGetId()
+        public int GetId()
         {
             return Id;
         }
@@ -59,7 +60,7 @@
             Id = value;
         }
 
-        public PlaceType GetGetType()
+        public PlaceType GetType()
         {
             return Type;
         }
@@ -72,6 +73,11 @@
         public Renter GetRenter()
         {
             return Renter;
+        }
+
+        public void SetRenter(Renter value)
+        {
+            Renter = value;
         }
 
         public string GetName()
@@ -262,7 +268,7 @@
 
         public override string ToString()
         {
-            return ("------Place(id:"+Id+")-----\n" +
+            return ("------Place(id:" + Id + ")-----\n" +
                 "Name : " + GetName() +
                 "\nPlace Type : " + GetType() +
                 "\nPrice : " + GetPrice() +
@@ -278,7 +284,6 @@
                 "\nPrivate Beach : " + (HasPrivateBeach ? "Yes" : "No") +
                 "\nParking Area : " + (HasParkingArea ? "Yes" : "No") +
                 "\n----------------------");
-            
         }
     }
 }

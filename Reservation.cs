@@ -115,8 +115,6 @@
             TotalPrice = value;
         }
 
-        
-
         public override string ToString()
         {
             return ("------------Reservation(id:" + Id + ")------------\n" +
@@ -124,14 +122,11 @@
                 Renter.GetInformation() +
                 Rentee.GetInformation() +
                 "----------------------------------------------");
-
         }
 
         public string GetShortInfo()
         {
             return ("Place: " + Place.GetName() + ", Renter: " + Renter.GetName() + ", Rentee: " + Rentee.GetName() + ", Reservation Id:" + Id);
         }
-
-
     }
 }

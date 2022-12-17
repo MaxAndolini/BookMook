@@ -1,48 +1,94 @@
-﻿namespace BookMook
+﻿using System.Linq;
+
+namespace BookMook
 {
     internal class ReservationManager
     {
-        private static List<Place> PlaceList = new List<Place>();
-        private static List<Reservation> ReservationList = new List<Reservation>();
+        private static List<Place> PlaceList = new();
+        private static List<Reservation> ReservationList = new();
 
         public static void PrintPlaceList()
         {
             Console.WriteLine("-----------All Places---------");
-            for(int i = 0; i < PlaceList.Count; i++)
+            for (int i = 0; i < PlaceList.Count; i++)
             {
-                Console.WriteLine((i+1)+"- "+PlaceList[i].GetName()+"("+ PlaceList[i].GetAddress()+ ")");
+                Console.WriteLine((i + 1) + "- " + PlaceList[i].GetName() + "(" + PlaceList[i].GetAddress() + ")");
             }
             Console.WriteLine("------------------------------");
         }
 
         public static void AddPlace(Place place)
         {
+            if (PlaceList.Contains(place))
+            {
+                Console.WriteLine(place.GetName() + " is already in place list!");
+                return;
+            }
+
             PlaceList.Add(place);
-            Console.WriteLine("The Place ADDED successfully ✓");
+            Console.WriteLine(place.GetName() + " is successfully added to the list ✓");
         }
 
         public static void RemovePlace(Place place)
         {
+            if (!PlaceList.Contains(place))
+            {
+                Console.WriteLine(place.GetName() + " is already not in place list!");
+                return;
+            }
+
             PlaceList.Remove(place);
-            Console.WriteLine("The Place REMOVED successfully ✓");
+            Console.WriteLine(place.GetName() + " is successfully removed in the list ✓");
+        }
+
+        public static void RemovePlace(int placeId)
+        {
+            var place = PlaceList.FirstOrDefault(m => m.GetId() == placeId);
+
+            if (place == null)
+            {
+                Console.WriteLine("Place couldn't found!");
+                return;
+            }
+
+            RemovePlace(place);
         }
 
         public static void AddReservation(Reservation reservation)
         {
+            if (ReservationList.Contains(reservation))
+            {
+                Console.WriteLine("Reservation Id (" + reservation.GetId() + ") is already done!");
+                return;
+            }
+
             ReservationList.Add(reservation);
-            Console.WriteLine("The Reservation is DONE ✓");
+            Console.WriteLine("Reservation Id (" + reservation.GetId() + ") is successfully done ✓");
         }
 
         public static void RemoveReservation(Reservation reservation)
         {
+            if (!ReservationList.Contains(reservation))
+            {
+                Console.WriteLine("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
+                return;
+            }
+
             ReservationList.Remove(reservation);
-            Console.WriteLine("The Reservation REMOVED successfully ✓");
+            Console.WriteLine("Reservation Id (" + reservation.GetId() + ") is successfully removed ✓");
         }
 
-        public static void CancelReservation(int reservationId)
+        public static void RemoveReservation(int reservationId)
         {
-            ReservationList.RemoveAll(r => r.GetId() == reservationId);
-            Console.WriteLine("The Reservation Canceled successfully ✓");
+            var reservation = ReservationList.FirstOrDefault(m => m.GetId() == reservationId);
+
+            if (reservation == null)
+            {
+                Console.WriteLine("Reservation couldn't found!");
+                return;
+            }
+
+            RemoveReservation(reservation);
         }
 
         public static Reservation? GetReservation(int reservationId)
@@ -76,6 +122,7 @@
             (placeFilter.PrivateBeach != null && p.GetHasPrivateBeach() == placeFilter.PrivateBeach) &&
             (placeFilter.ParkingArea != null && p.GetHasParkingArea() == placeFilter.ParkingArea));
         }
+
         public static List<Reservation> GetReservationList()
         {
             return ReservationList;

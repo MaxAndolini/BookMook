@@ -2,11 +2,10 @@
 {
     internal class Rentee : Customer
     {
-        private List<Reservation> MyReservations;
+        private List<Reservation> MyReservations = new();
 
-        public Rentee(int id, string name, string emailAddress, string password, Wallet wallet, CreditCard creditCard, List<Reservation> myReservations) : base(id, name, emailAddress, password, wallet, creditCard)
+        public Rentee(int id, string name, string emailAddress, string password, Wallet wallet, CreditCard creditCard) : base(id, name, emailAddress, password, wallet, creditCard)
         {
-            MyReservations = myReservations;
         }
 
         public void PrintMyReservations()
@@ -42,7 +41,7 @@
         {
             while (true)
             {
-                Console.WriteLine("--------Menu for "+Name+"----------\n" +
+                Console.WriteLine("--------Menu for " + Name + "----------\n" +
                 "1- Show All Places\n" +
                 "2- Show My Reservations\n" +
                 "3- Cancel Reservation\n" +
@@ -58,7 +57,7 @@
                         Console.WriteLine("----------------------");
                         Console.WriteLine("Select any place to see the detailed information!(0 to quit) Enter selection:");
                         string selection = Console.ReadLine();
-                        if(selection == "0")
+                        if (selection == "0")
                         {
                             break;
                         }
@@ -66,9 +65,9 @@
                         {
                             Console.WriteLine(ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].ToString());
                             Console.WriteLine("Do you want to reserve this place ?(1 for YES, 2 for NO)");
-                           
+
                             string selection2 = Console.ReadLine();
-                            if(selection2 == "1")
+                            if (selection2 == "1")
                             {
                                 //Burada başlangıç ve çıkış tarihine göre kontrol edip sonrasında reservasyonu gerçekleştirilecek kod yazılmalı.
                             }
@@ -80,15 +79,15 @@
                         }
                         Console.WriteLine("----------------------");
                     }
-                    
+
                 }
-                
+
                 else if (input == "2")
                 {
                     int counter = 0;
                     foreach (Reservation reservation in MyReservations)
                     {
-                            Console.WriteLine((counter + 1) + "- " + reservation.GetShortInfo());
+                        Console.WriteLine((counter + 1) + "- " + reservation.GetShortInfo());
                         counter++;
                     }
                     Console.WriteLine("----------------------");
@@ -104,7 +103,7 @@
                 {
 
                 }
-                
+
                 else if (input == "0")
                 {
                     break;
@@ -113,15 +112,13 @@
                 {
                     Console.WriteLine("Invalid Input!!!!!!!!!");
                 }
-
-
             }
         }
 
         public string GetInformation()
         {
             return ("------Rentee(id:" + Id + ")-----" +
-                "\nName:" + Name + 
+                "\nName:" + Name +
                 "\nEmail address: " + EmailAddress +
                 "\n----------------------\n");
         }
