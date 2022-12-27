@@ -10,13 +10,10 @@
 
         public void ShowMyReservationList()
         {
-            int counter = 0;
-            foreach (Reservation reservation in MyReservations)
+            for (int i = 0; i < MyReservations.Count; i++)
             {
-                Console.WriteLine((counter + 1) + "- " + reservation.GetShortInfo());
-                counter++;
+                Console.WriteLine(i + "- " + MyReservations[i].GetShortInfo());
             }
-
         }
 
         public void MakeComment(Place place, string comment)
@@ -133,10 +130,10 @@
 
         public string GetInformation()
         {
-            return ("------Rentee(id:" + Id + ")-----" +
+            return "\x1b[31;1;4m-----------Rentee (" + Id + ")---------\u001b[37;24m" +
                 "\nName:" + Name +
                 "\nEmail address: " + EmailAddress +
-                "\n----------------------\n");
+                "\n\x1b[31;1;4m------------------------------\x1b[37;24m";
         }
     }
 }

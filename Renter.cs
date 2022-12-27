@@ -1,4 +1,8 @@
-﻿namespace BookMook
+﻿using System;
+using System.Net;
+using System.Text.RegularExpressions;
+
+namespace BookMook
 {
     internal class Renter : Customer
     {
@@ -10,47 +14,38 @@
 
         public void PrintMyPlaces()
         {
-            int counter = 0;
-            foreach (Place place in MyPlaces)
+            Console.WriteLine("\x1b[31;1;4m-----------My Places---------\u001b[37;24m");
+            for (int i = 0; i < MyPlaces.Count; i++)
             {
-                Console.WriteLine((counter + 1) + "- " + place.GetShortInfo());
-                counter++;
+                Console.WriteLine(i + ": " + MyPlaces[i].GetShortInfo());
             }
-        }
-
-        public void ShowMyReservations()
-        {
-            //Rentee ile renter ı ortak bir pakete alıp , Rentee nin içindeki MyReservationListi 
-            //protected yapıp , bu metodun içinde çağırdıktan sonra MyPlaces ile eşleşiyor mu diye
-            //kontrol edip , eğer eşleşiyorsa bir listeye atıp onu da print ettirip bitirebiliriz.
-
-
+            Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
         }
 
         public void AddPlace(Place place)
         {
             if (MyPlaces.Contains(place))
             {
-                Console.WriteLine(place.GetName() + " is already in place list!");
+                Utils.Error(place.GetName() + " is already in place list!");
                 return;
             }
 
             MyPlaces.Add(place);
             ReservationManager.GetPlaceList().Add(place);
-            Console.WriteLine(place.GetName() + " is successfully added to the list ✓");
+            Utils.Error(place.GetName() + " is successfully added to the list.");
         }
 
         public void RemovePlace(Place place)
         {
             if (!MyPlaces.Contains(place))
             {
-                Console.WriteLine(place.GetName() + " is already not in place list!");
+                Utils.Error(place.GetName() + " is already not in place list!");
                 return;
             }
 
             MyPlaces.Remove(place);
             ReservationManager.GetPlaceList().Remove(place);
-            Console.WriteLine(place.GetName() + " is successfully removed in the list ✓");
+            Utils.Info(place.GetName() + " is successfully removed in the list.");
         }
 
         public void RemovePlace(int placeId)
@@ -59,7 +54,7 @@
 
             if (place == null)
             {
-                Console.WriteLine("Place couldn't found!");
+                Utils.Error("Place couldn't found!");
                 return;
             }
 
@@ -75,473 +70,608 @@
         {
             while (true)
             {
-                Console.WriteLine("--------Menu for " + Name + "----------\n" +
-                "1- Show All Places\n" +
-                "2- Show My Places\n" +
-                "3- Show My Reserved Places\n" +
-                "4- Add new Place\n" +
-                "5- Remove Place\n" +
-                "6- Cancel Reservation\n" +
-                "0- To Quit\n" +
-                "----------------------\n" +
-                "Please select one of the options");
-                String input = Console.ReadLine();
-                if (input == "1")
+                Menu menu = new(Name, new string[] { "Show All Places", "Show My Places", "Show My Reserved Places", "Add New Place", "Quit" });
+                int index = menu.Run();
+                if (index == 0)
                 {
+                    if (ReservationManager.GetPlaceList().Count != 0) ReservationManager.PrintPlaceList();
+
                     while (true)
                     {
-                        ReservationManager.PrintPlaceList();
-                        Console.WriteLine("----------------------");
-                        Console.WriteLine("Select any place to see the detailed information!(0 to quit) Enter selection:");
-                        string selection = Console.ReadLine();
-                        if (selection == "0")
+                        try
                         {
-                            break;
-                        }
-                        if (Int32.Parse(selection) <= ReservationManager.GetPlaceList().Count)
-                        {
-                            Console.WriteLine(ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].ToString());
-
-                        }
-                        Console.WriteLine("----------------------");
-                    }
-
-                }
-                else if (input == "2")
-                {
-
-                    Console.WriteLine("------------------------------");
-                    if (MyPlaces.Count > 0)
-                    {
-                        while (true)
-                        {
-                            PrintMyPlaces();
-                            Console.WriteLine("----------------------");
-                            Console.WriteLine("Select any place to see the detailed information(0 to quit)! Enter selection:");
-                            string selection = Console.ReadLine();
-                            if (selection == "0")
+                            if (ReservationManager.GetPlaceList().Count == 0)
                             {
+                                Console.Clear();
+                                Utils.Error("Places are empty!");
+                                Thread.Sleep(1000);
+                                Console.Clear();
                                 break;
                             }
-                            if (Int32.Parse(selection) <= MyPlaces.Count)
+
+                            Utils.Question("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:");
+                            var select = Convert.ToInt32(Console.ReadLine());
+                            if (select == -1) break;
+                            if (select < 0 || ReservationManager.GetPlaceList().Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+
+                            Console.WriteLine(ReservationManager.GetPlaceList()[select].ToString());
+                            Thread.Sleep(1000);
+
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Clear();
+                            Utils.Error(ex.Message);
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                        }
+                    }
+                }
+                else if (index == 1)
+                {
+                    if (MyPlaces.Count != 0) PrintMyPlaces();
+
+                    while (true)
+                    {
+                        try
+                        {
+                            if (MyPlaces.Count == 0)
                             {
-                                Console.WriteLine(MyPlaces[Int32.Parse(selection) - 1].ToString());
-
+                                Console.Clear();
+                                Utils.Error("My places are empty!");
+                                Thread.Sleep(1000);
+                                Console.Clear();
+                                break;
                             }
-                            Console.WriteLine("Do you want to delete this place ? (1 for YES, 2 for NO)");  // Maybe we can add changing the reservtion details option later(such as Start or End dates)
-                            string selection2 = Console.ReadLine();
-                            if (selection2 == "1")
+
+                            Utils.Question("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:");
+                            var select = Convert.ToInt32(Console.ReadLine());
+                            if (select == -1) break;
+                            if (select < 0 || MyPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+
+                            Console.WriteLine(MyPlaces[select].ToString());
+
+                            Menu deleteMenu = new("Do you want to delete id (" + select + ") place?", new string[] { "Yes", "No" });
+                            int deleteIndex = deleteMenu.Run();
+
+                            if (deleteIndex == 0) RemovePlace(MyPlaces[select]);
+                            Thread.Sleep(1000);
+
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Clear();
+                            Utils.Error(ex.Message);
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                        }
+                    }
+                }
+                else if (index == 2)
+                {
+                    List<Reservation> myReservationsList = ReservationManager.GetReservationList().Where(r => r.GetRenter().Id == Id).ToList();
+
+                    if (myReservationsList.Count != 0)
+                    {
+                        Console.WriteLine("\x1b[31;1;4m-----------My Reserved Places---------\u001b[37;24m");
+                        for (int i = 0; i < myReservationsList.Count; i++)
+                        {
+                            Console.WriteLine(i + ": " + myReservationsList[i].GetShortInfo());
+                        }
+                        Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+                    }
+
+                    while (true)
+                    {
+                        try
+                        {
+                            if (myReservationsList.Count == 0)
                             {
-                                RemovePlace(MyPlaces[Int32.Parse(selection) - 1]);
-
+                                Console.Clear();
+                                Utils.Error("My reserved places are empty!");
+                                Thread.Sleep(1000);
+                                Console.Clear();
+                                break;
                             }
-                            else
+
+                            Utils.Question("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:");
+                            var select = Convert.ToInt32(Console.ReadLine());
+                            if (select == -1) break;
+                            if (select < 0 || myReservationsList.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+
+                            Console.WriteLine(myReservationsList[select].ToString());
+
+                            Menu deleteMenu = new("Do you want to cancel id (" + select + ") reservation?", new string[] { "Yes", "No" });
+                            int deleteIndex = deleteMenu.Run();
+
+                            if (deleteIndex == 0) ReservationManager.RemoveReservation(myReservationsList[select]);
+                            Thread.Sleep(1000);
+
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Clear();
+                            Utils.Error(ex.Message);
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                        }
+                    }
+                }
+                else if (index == 3)
+                {
+                    int step = 0;
+                    PlaceType placeType = PlaceType.Apartment;
+                    string name = "";
+                    double price = 0.0;
+                    string address = "";
+                    int guestLimit = 0;
+                    int flatNumber = 0;
+                    int roomNumber = 0;
+                    bool hasFreeWifi = false;
+                    bool hasSpareBathroom = false;
+                    bool isSmokingAllowed = false;
+                    bool hasPool = false;
+                    bool hasGarden = false;
+                    bool hasPrivateBeach = false;
+                    bool hasParkingArea = false;
+
+                    while (true)
+                    {
+                        if (step == -1) break;
+
+                        if (step == 0)
+                        {
+                            PlaceType[] placeTypes = (PlaceType[])Enum.GetValues(typeof(PlaceType));
+                            string[] placeTypesList = Array.ConvertAll(placeTypes, x => Regex.Replace(x.ToString(), "([a-z])_?([A-Z])", "$1 $2"));
+
+                            Menu typeMenu = new("What is the type of your place?", placeTypesList.Concat(new string[] { "Quit" }).ToArray());
+                            int typeIndex = typeMenu.Run();
+                            if (typeIndex == placeTypes.Length)
                             {
-                                //Leave empty for now
+                                step = -1;
+                                continue;
+                            }
+                            placeType = placeTypes[typeIndex];
+                            Console.Clear();
+                            Utils.Info(placeTypesList[typeIndex] + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            step++;
+                        }
+
+                        if (step == 1)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    Utils.Question("What is the name of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
+                                    var select = Console.ReadLine();
+                                    if (select == "-1")
+                                    {
+                                        step--;
+                                        Console.Clear();
+                                        break;
+                                    }
+                                    else if (select == "-2")
+                                    {
+                                        step = -1;
+                                        break;
+                                    }
+                                    if (string.IsNullOrEmpty(select)) throw new Exception("Name can not be empty!");
+                                    if (select.Length < 2 || select.Length > 32) throw new Exception("Name must be between 2-32 character!");
+
+                                    name = select;
+                                    Console.Clear();
+                                    Utils.Info(select + " is selected.");
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                    step++;
+
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Utils.Error(ex.Message);
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                }
                             }
                         }
 
+                        if (step == 2)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    Utils.Question("What is the price per day of your place (Ex: 55.99) \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
+                                    var select = Console.ReadLine();
+                                    if (select == "-1")
+                                    {
+                                        step--;
+                                        Console.Clear();
+                                        break;
+                                    }
+                                    else if (select == "-2")
+                                    {
+                                        step = -1;
+                                        break;
+                                    }
+                                    if (string.IsNullOrEmpty(select)) throw new Exception("Price can not be empty!");
+                                    if (!Regex.IsMatch(select, @"^(?!0*\.0+$)\d*(?:\.\d+)?$")) throw new Exception("Price must be double!");
 
+                                    price = Convert.ToDouble(select);
+                                    Console.Clear();
+                                    Utils.Info(select + " is selected.");
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                    step++;
+
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Utils.Error(ex.Message);
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                }
+                            }
+                        }
+
+                        if (step == 3)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    Utils.Question("What is the address of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
+                                    var select = Console.ReadLine();
+                                    if (select == "-1")
+                                    {
+                                        step--;
+                                        Console.Clear();
+                                        break;
+                                    }
+                                    else if (select == "-2")
+                                    {
+                                        step = -1;
+                                        break;
+                                    }
+                                    if (string.IsNullOrEmpty(select)) throw new Exception("Address can not be empty!");
+                                    if (select.Length < 10 || select.Length > 60) throw new Exception("Address must be between 10-60 character!");
+
+                                    address = select;
+                                    Console.Clear();
+                                    Utils.Info(select + " is selected.");
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                    step++;
+
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Utils.Error(ex.Message);
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                }
+                            }
+                        }
+
+                        if (step == 4)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    Utils.Question("What is the guest limit of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
+                                    var select = Convert.ToInt32(Console.ReadLine());
+                                    if (select == -1)
+                                    {
+                                        step--;
+                                        Console.Clear();
+                                        break;
+                                    }
+                                    else if (select == -2)
+                                    {
+                                        step = -1;
+                                        break;
+                                    }
+                                    if (select < 0) throw new Exception("Price can not be less than 0!");
+
+                                    guestLimit = select;
+                                    Console.Clear();
+                                    Utils.Info(select + " is selected.");
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                    step++;
+
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Utils.Error(ex.Message);
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                }
+                            }
+                        }
+
+                        if (step == 5)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    Utils.Question("What is the flat number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
+                                    var select = Convert.ToInt32(Console.ReadLine());
+                                    if (select == -1)
+                                    {
+                                        step--;
+                                        Console.Clear();
+                                        break;
+                                    }
+                                    else if (select == -2)
+                                    {
+                                        step = -1;
+                                        break;
+                                    }
+                                    if (select < 0) throw new Exception("Flat number can not be less than 0!");
+
+                                    flatNumber = select;
+                                    Console.Clear();
+                                    Utils.Info(select + " is selected.");
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                    step++;
+
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Utils.Error(ex.Message);
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                }
+                            }
+                        }
+
+                        if (step == 6)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+                                    Utils.Question("What is the room number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
+                                    var select = Convert.ToInt32(Console.ReadLine());
+                                    if (select == -1)
+                                    {
+                                        step--;
+                                        Console.Clear();
+                                        break;
+                                    }
+                                    else if (select == -2)
+                                    {
+                                        step = -1;
+                                        break;
+                                    }
+                                    if (select < 0) throw new Exception("Room number can not be less than 0!");
+
+                                    roomNumber = select;
+                                    Console.Clear();
+                                    Utils.Info(select + " is selected.");
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                    step++;
+
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Utils.Error(ex.Message);
+                                    Thread.Sleep(1000);
+                                    Console.Clear();
+                                }
+                            }
+                        }
+
+                        if (step == 7)
+                        {
+                            Menu hasFreeWifiMenu = new("Does your place have free wifi?", new string[] { "Yes", "No", "Back", "Quit" });
+                            int hasFreeWifiIndex = hasFreeWifiMenu.Run();
+
+                            if (hasFreeWifiIndex == 2)
+                            {
+                                step--;
+                                Console.Clear();
+                                continue;
+                            }
+                            else if (hasFreeWifiIndex == 3)
+                            {
+                                step = -1;
+                                continue;
+                            }
+                            hasFreeWifi = hasFreeWifiIndex == 0;
+                            Console.Clear();
+                            Utils.Info((hasFreeWifiIndex == 0 ? "Yes" : "No") + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            step++;
+                        }
+
+                        if (step == 8)
+                        {
+                            Menu hasSpareBathroomMenu = new("Does your place have a spare bathroom?", new string[] { "Yes", "No", "Back", "Quit" });
+                            int hasSpareBathroomIndex = hasSpareBathroomMenu.Run();
+
+                            if (hasSpareBathroomIndex == 2)
+                            {
+                                step--;
+                                Console.Clear();
+                                continue;
+                            }
+                            else if (hasSpareBathroomIndex == 3)
+                            {
+                                step = -1;
+                                continue;
+                            }
+                            hasSpareBathroom = hasSpareBathroomIndex == 0;
+                            Console.Clear();
+                            Utils.Info((hasSpareBathroomIndex == 0 ? "Yes" : "No") + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            step++;
+                        }
+
+                        if (step == 9)
+                        {
+                            Menu isSmokingAllowedMenu = new("Is smoking allowed in your place?", new string[] { "Yes", "No", "Back", "Quit" });
+                            int isSmokingAllowedIndex = isSmokingAllowedMenu.Run();
+
+                            if (isSmokingAllowedIndex == 2)
+                            {
+                                step--;
+                                Console.Clear();
+                                continue;
+                            }
+                            else if (isSmokingAllowedIndex == 3)
+                            {
+                                step = -1;
+                                continue;
+                            }
+                            isSmokingAllowed = isSmokingAllowedIndex == 0;
+                            Console.Clear();
+                            Utils.Info((isSmokingAllowedIndex == 0 ? "Yes" : "No") + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            step++;
+                        }
+
+                        if (step == 10)
+                        {
+                            Menu hasPoolMenu = new("Does your place have a pool?", new string[] { "Yes", "No", "Back", "Quit" });
+                            int hasPoolIndex = hasPoolMenu.Run();
+
+                            if (hasPoolIndex == 2)
+                            {
+                                step--;
+                                Console.Clear();
+                                continue;
+                            }
+                            else if (hasPoolIndex == 3)
+                            {
+                                step = -1;
+                                continue;
+                            }
+                            hasPool = hasPoolIndex == 0;
+                            Console.Clear();
+                            Utils.Info((hasPoolIndex == 0 ? "Yes" : "No") + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            step++;
+                        }
+
+                        if (step == 11)
+                        {
+                            Menu hasGardenMenu = new("Does your place have a garden?", new string[] { "Yes", "No", "Back", "Quit" });
+                            int hasGardenIndex = hasGardenMenu.Run();
+
+                            if (hasGardenIndex == 2)
+                            {
+                                step--;
+                                Console.Clear();
+                                continue;
+                            }
+                            else if (hasGardenIndex == 3)
+                            {
+                                step = -1;
+                                continue;
+                            }
+                            hasGarden = hasGardenIndex == 0;
+                            Console.Clear();
+                            Utils.Info((hasGardenIndex == 0 ? "Yes" : "No") + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            step++;
+                        }
+
+                        if (step == 12)
+                        {
+                            Menu hasPrivateBeachMenu = new("Does your place have a private beach?", new string[] { "Yes", "No", "Back", "Quit" });
+                            int hasPrivateBeachIndex = hasPrivateBeachMenu.Run();
+
+                            if (hasPrivateBeachIndex == 2)
+                            {
+                                step--;
+                                Console.Clear();
+                                continue;
+                            }
+                            else if (hasPrivateBeachIndex == 3)
+                            {
+                                step = -1;
+                                continue;
+                            }
+                            hasPrivateBeach = hasPrivateBeachIndex == 0;
+                            Console.Clear();
+                            Utils.Info((hasPrivateBeachIndex == 0 ? "Yes" : "No") + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            step++;
+                        }
+
+                        if (step == 13)
+                        {
+                            Menu hasParkingAreaMenu = new("Does your place have a parking area?", new string[] { "Yes", "No", "Back", "Quit" });
+                            int hasParkingAreaIndex = hasParkingAreaMenu.Run();
+
+                            if (hasParkingAreaIndex == 2)
+                            {
+                                step--;
+                                Console.Clear();
+                                continue;
+                            }
+                            else if (hasParkingAreaIndex == 3)
+                            {
+                                step = -1;
+                                continue;
+                            }
+                            hasParkingArea = hasParkingAreaIndex == 0;
+                            Console.Clear();
+                            Utils.Info((hasParkingAreaIndex == 0 ? "Yes" : "No") + " is selected.");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+
+                            Place new_place = new(Place.TotalPlaceNumber, placeType, this, name, price, address, guestLimit, flatNumber, roomNumber, hasFreeWifi, hasSpareBathroom, isSmokingAllowed, hasPool, hasGarden, hasPrivateBeach, hasParkingArea);
+                            AddPlace(new_place);
+                            ReservationManager.AddPlace(new_place);
+
+                            break;
+                        }
                     }
-
                 }
-                else if (input == "3")
+                else if (index == 6)
                 {
-                    List<Reservation> allReservationsList = ReservationManager.GetReservationList();
-                    List<Reservation> myReservationsList = new List<Reservation>();
-                    foreach (Reservation reservation in allReservationsList)
-                    {
-                        int counter = 0;
-                        if (reservation.GetRenter().Id == Id)
-                        {
-                            Console.WriteLine((counter + 1) + "- " + reservation.GetShortInfo());
-                            myReservationsList.Add(reservation);
-                            counter++;
-                        }
-                    }
-                    if (myReservationsList.Count > 0)
-                    {
-                        Console.WriteLine("----------------------");
-                        Console.WriteLine("Select reservation to see the information! Enter selection:");
-                        string selection = Console.ReadLine();
-                        if (Int32.Parse(selection) <= myReservationsList.Count)
-                        {
-                            Console.WriteLine(myReservationsList[Int32.Parse(selection) - 1].ToString());
-
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("There is not any active reservation!!!!");
-                    }
-
-
-
-                }
-                else if (input == "4")
-                {
-                    //ENUM TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("What is the type of your place ?(1 for HotelRoom, 2 for Apartment)");
-
-                    PlaceType place_type;
-                    while (true)
-                    {
-                        String place_type_input = Console.ReadLine();
-                        if (place_type_input == "1")
-                        {
-                            place_type = PlaceType.HotelRoom;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (place_type_input == "2")
-                        {
-                            place_type = PlaceType.Apartment;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid Type number!!");
-                        }
-                    }
-
-                    //NAME INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("What is the name of your place ?");
-                    String name;
-                    while (true)
-                    {
-                        String name_input = Console.ReadLine();
-                        if (name_input == "")
-                        {
-                            Console.WriteLine("You can not leave the name empty. Please enter valid name!!");
-                        }
-                        else
-                        {
-                            name = name_input;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                    }
-
-                    //Price Input
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("What is the price per day ?(ex: 55.99)");
-
-                    double price;
-                    while (true)
-                    {
-                        String price_input = Console.ReadLine();
-                        if (price_input == "")
-                        {
-                            Console.WriteLine("You can not leave the price empty. Please enter a valid price!!");
-                        }
-                        else
-                        {
-                            price = Convert.ToDouble(price_input);
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                    }
-
-                    //Address INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("What is the address of your place ?");
-                    String address;
-                    while (true)
-                    {
-                        String address_input = Console.ReadLine();
-                        if (address_input == "")
-                        {
-                            Console.WriteLine("You can not leave the address empty. Please enter valid address!!");
-                        }
-                        else
-                        {
-                            address = address_input;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                    }
-
-                    //Guest Limit INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("What is the guest limit of your place ?");
-                    int guest_limit;
-                    while (true)
-                    {
-                        String guest_limit_input = Console.ReadLine();
-                        if (guest_limit_input == "")
-                        {
-                            Console.WriteLine("You can not leave the guest limit empty. Please enter valid guest limit!!");
-                        }
-                        else
-                        {
-                            guest_limit = Int32.Parse(guest_limit_input);
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                    }
-
-                    //FLAT NO INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("What is the flat of your place ?");
-                    int flat_no;
-                    while (true)
-                    {
-                        String flat_no_input = Console.ReadLine();
-                        if (flat_no_input == "")
-                        {
-                            Console.WriteLine("You can not leave the flat empty. Please enter valid flat!!");
-                        }
-                        else
-                        {
-                            flat_no = Int32.Parse(flat_no_input);
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                    }
-
-
-                    //ROOM NUMBER INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("What is the room number of your place ?");
-                    int room_number;
-                    while (true)
-                    {
-                        String room_number_input = Console.ReadLine();
-                        if (room_number_input == "")
-                        {
-                            Console.WriteLine("You can not leave the room number. Please enter valid room number!!");
-                        }
-                        else
-                        {
-                            room_number = Int32.Parse(room_number_input);
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                    }
-
-
-                    //HAS FREE WIFI TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Does your place have Free Wifi ? ?(1 for YES, 2 for NO)");
-
-                    bool has_free_wifi;
-                    while (true)
-                    {
-                        String has_free_wifi_input = Console.ReadLine();
-                        if (has_free_wifi_input == "1")
-                        {
-                            has_free_wifi = true;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (has_free_wifi_input == "2")
-                        {
-                            has_free_wifi = false;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid input number!!");
-                        }
-                    }
-
-                    //HAS SPARE BATHROOM TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Does your place have spare bathroom ? ?(1 for YES, 2 for NO)");
-
-                    bool has_spare_bathroom;
-                    while (true)
-                    {
-                        String has_spare_bathroom_input = Console.ReadLine();
-                        if (has_spare_bathroom_input == "1")
-                        {
-                            has_spare_bathroom = true;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (has_spare_bathroom_input == "2")
-                        {
-                            has_spare_bathroom = false;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid input number!!");
-                        }
-                    }
-
-
-                    //IS SMOKING ALLOWED TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Is smoking allowed in your place ? ?(1 for YES, 2 for NO)");
-
-                    bool is_smoking_allowed;
-                    while (true)
-                    {
-                        String is_smoking_allowed_input = Console.ReadLine();
-                        if (is_smoking_allowed_input == "1")
-                        {
-                            is_smoking_allowed = true;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (is_smoking_allowed_input == "2")
-                        {
-                            is_smoking_allowed = false;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid input number!!");
-                        }
-                    }
-
-
-                    //HAS POOL TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Does your place have POOL ? ?(1 for YES, 2 for NO)");
-
-                    bool has_pool;
-                    while (true)
-                    {
-                        String has_pool_input = Console.ReadLine();
-                        if (has_pool_input == "1")
-                        {
-                            has_pool = true;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (has_pool_input == "2")
-                        {
-                            has_pool = false;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid input number!!");
-                        }
-                    }
-
-
-                    //HAS GARDEN TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Does your place have GARDEN ? ?(1 for YES, 2 for NO)");
-
-                    bool has_garden;
-                    while (true)
-                    {
-                        String has_garden_input = Console.ReadLine();
-                        if (has_garden_input == "1")
-                        {
-                            has_garden = true;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (has_garden_input == "2")
-                        {
-                            has_garden = false;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid input number!!");
-                        }
-                    }
-
-                    //HAS PRIVATE BEACH TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Does your place have PRIVATE BEACH ? ?(1 for YES, 2 for NO)");
-
-                    bool has_private_beach;
-                    while (true)
-                    {
-                        String has_private_beach_input = Console.ReadLine();
-                        if (has_private_beach_input == "1")
-                        {
-                            has_private_beach = true;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (has_private_beach_input == "2")
-                        {
-                            has_private_beach = false;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid input number!!");
-                        }
-                    }
-
-                    //HAS PARKING AREA BEACH TYPE INPUT
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Does your place have PARKING AREA ? ?(1 for YES, 2 for NO)");
-
-                    bool has_parking_area;
-                    while (true)
-                    {
-                        String has_parking_area_input = Console.ReadLine();
-                        if (has_parking_area_input == "1")
-                        {
-                            has_parking_area = true;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else if (has_parking_area_input == "2")
-                        {
-                            has_parking_area = false;
-                            Console.WriteLine("----------------------");
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please Enter a valid input number!!");
-                        }
-                    }
-
-                    Place new_place = new Place(Place.TotalPlaceNumber, place_type, this, name, price, address, guest_limit, flat_no, room_number, has_free_wifi, has_spare_bathroom, is_smoking_allowed, has_pool, has_garden, has_private_beach, has_parking_area);
-                    AddPlace(new_place);
-                    ReservationManager.AddPlace(new_place);
-
-                }
-                else if (input == "5")
-                {
-                    // bunu 2. madde de yapmışız gibi duruyor 
-                }
-                else if (input == "6")
-                {
-                    // ShowMyReservations();
-                    // elimizdeki rezerve edilmiş yerleri görüp sonra bir tanesini seçtikten sonra
-                    // neden bıraktığımıza Placenin comment listine ekledikten sonra remove ederiz 
-
-
-                }
-                else if (input == "0")
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Invalid Input!!!!!!!!!");
+                    Environment.Exit(0);
                 }
             }
         }
 
         public string GetInformation()
         {
-            return ("------Renter(id:" + Id + ")-----" +
+            return "\x1b[31;1;4m-----------Renter (" + Id + ")---------\u001b[37;24m" +
                 "\nName:" + Name +
                 "\nEmail address: " + EmailAddress +
-                "\n----------------------\n");
+                "\n\x1b[31;1;4m------------------------------\x1b[37;24m";
         }
     }
 }

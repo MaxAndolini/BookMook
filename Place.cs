@@ -16,11 +16,11 @@
         private double Price;
         private string Address;
         private int GuestLimit;
-        private int FlatNo;
+        private int FlatNumber;
         private int RoomNumber;
         private bool HasFreeWifi;
         private bool HasSpareBathroom;
-        private bool IsSmookingAllowed;
+        private bool IsSmokingAllowed;
         private bool HasPool;
         private bool HasGarden;
         private bool HasPrivateBeach;
@@ -29,7 +29,7 @@
         private List<string> CommentList = new();
         private List<int> RateList = new();
 
-        public Place(int id, PlaceType type, Renter renter, string name, double price, string address, int guestLimit, int flatNo, int roomNumber, bool hasFreeWifi, bool hasSpareBathroom, bool isSmookingAllowed, bool hasPool, bool hasGarden, bool hasPrivateBeach, bool hasParkingArea)
+        public Place(int id, PlaceType type, Renter renter, string name, double price, string address, int guestLimit, int flatNumber, int roomNumber, bool hasFreeWifi, bool hasSpareBathroom, bool isSmokingAllowed, bool hasPool, bool hasGarden, bool hasPrivateBeach, bool hasParkingArea)
         {
             TotalPlaceNumber++;
             Id = id;
@@ -39,11 +39,11 @@
             Price = price;
             Address = address;
             GuestLimit = guestLimit;
-            FlatNo = flatNo;
+            FlatNumber = flatNumber;
             RoomNumber = roomNumber;
             HasFreeWifi = hasFreeWifi;
             HasSpareBathroom = hasSpareBathroom;
-            IsSmookingAllowed = isSmookingAllowed;
+            IsSmokingAllowed = isSmokingAllowed;
             HasPool = hasPool;
             HasGarden = hasGarden;
             HasPrivateBeach = hasPrivateBeach;
@@ -120,14 +120,14 @@
             GuestLimit = value;
         }
 
-        public int GetFlatNo()
+        public int GetFlatNumber()
         {
-            return FlatNo;
+            return FlatNumber;
         }
 
-        public void SetFlatNo(int value)
+        public void SetFlatNumber(int value)
         {
-            FlatNo = value;
+            FlatNumber = value;
         }
 
         public int GetRoomNumber()
@@ -160,14 +160,14 @@
             HasSpareBathroom = value;
         }
 
-        public bool GetIsSmookingAllowed()
+        public bool GetIsSmokingAllowed()
         {
-            return IsSmookingAllowed;
+            return IsSmokingAllowed;
         }
 
-        public void SetIsSmookingAllowed(bool value)
+        public void SetIsSmokingAllowed(bool value)
         {
-            IsSmookingAllowed = value;
+            IsSmokingAllowed = value;
         }
 
         public bool GetHasPool()
@@ -268,22 +268,22 @@
 
         public override string ToString()
         {
-            return ("------Place(id:" + Id + ")-----\n" +
-                "Name : " + GetName() +
+            return "\x1b[31;1;4m-----------Place (" + Id + ")---------\u001b[37;24m" +
+                "\nName : " + GetName() +
                 "\nPlace Type : " + GetType() +
                 "\nPrice : " + GetPrice() +
                 "\nAddress : " + GetAddress() +
                 "\nGuest Limit : " + GetGuestLimit() +
-                "\nFlat No : " + GetFlatNo() +
-                "\nRoomNumber : " + GetRoomNumber() +
-                "\nFree wifi : " + (HasFreeWifi ? "Yes" : "No") +
+                "\nFlat Number : " + GetFlatNumber() +
+                "\nRoom Number : " + GetRoomNumber() +
+                "\nFree Wifi : " + (HasFreeWifi ? "Yes" : "No") +
                 "\nSpare Bathroom : " + (HasSpareBathroom ? "Yes" : "No") +
-                "\nSmooking Allowed : " + (IsSmookingAllowed ? "Yes" : "No") +
+                "\nSmoking Allowed : " + (IsSmokingAllowed ? "Yes" : "No") +
                 "\nSwimming Pool : " + (HasPool ? "Yes" : "No") +
                 "\nGarden : " + (HasGarden ? "Yes" : "No") +
                 "\nPrivate Beach : " + (HasPrivateBeach ? "Yes" : "No") +
                 "\nParking Area : " + (HasParkingArea ? "Yes" : "No") +
-                "\n----------------------");
+                "\n\x1b[31;1;4m------------------------------\x1b[37;24m";
         }
 
         public string GetShortInfo()

@@ -117,16 +117,16 @@
 
         public override string ToString()
         {
-            return ("------------Reservation(id:" + Id + ")------------\n" +
+            return "\x1b[31;1;4m-----------Reservation (" + Id + ")---------\u001b[37;24m" +
                 Place.ToString() +
                 Renter.GetInformation() +
                 Rentee.GetInformation() +
-                "----------------------------------------------");
+                "\n\x1b[31;1;4m------------------------------\x1b[37;24m";
         }
 
         public string GetShortInfo()
         {
-            return ("Place: " + Place.GetName() + ", Renter: " + Renter.GetName() + ", Rentee: " + Rentee.GetName() + ", Reservation Id:" + Id);
+            return "Place: " + Place.GetName() + ", Renter: " + Renter.GetName() + ", Rentee: " + Rentee.GetName() + ", Reservation Id:" + Id;
         }
     }
 }

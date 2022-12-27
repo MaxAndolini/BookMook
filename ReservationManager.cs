@@ -7,36 +7,36 @@
 
         public static void PrintPlaceList()
         {
-            Console.WriteLine("-----------All Places---------");
+            Console.WriteLine("\x1b[31;1;4m-----------All Places---------\u001b[37;24m");
             for (int i = 0; i < PlaceList.Count; i++)
             {
-                Console.WriteLine((i + 1) + "- " + PlaceList[i].GetName() + "(" + PlaceList[i].GetAddress() + ")");
+                Console.WriteLine(i + ": " + PlaceList[i].GetName() + " (" + PlaceList[i].GetAddress() + ")");
             }
-            Console.WriteLine("------------------------------");
+            Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
         }
 
         public static void AddPlace(Place place)
         {
             if (PlaceList.Contains(place))
             {
-                Console.WriteLine(place.GetName() + " is already in place list!");
+                Utils.Error(place.GetName() + " is already in place list!");
                 return;
             }
 
             PlaceList.Add(place);
-            Console.WriteLine(place.GetName() + " is successfully added to the list ✓");
+            Utils.Info(place.GetName() + " is successfully added to the list.");
         }
 
         public static void RemovePlace(Place place)
         {
             if (!PlaceList.Contains(place))
             {
-                Console.WriteLine(place.GetName() + " is already not in place list!");
+                Utils.Error(place.GetName() + " is already not in place list!");
                 return;
             }
 
             PlaceList.Remove(place);
-            Console.WriteLine(place.GetName() + " is successfully removed in the list ✓");
+            Utils.Info(place.GetName() + " is successfully removed in the list.");
         }
 
         public static void RemovePlace(int placeId)
@@ -45,7 +45,7 @@
 
             if (place == null)
             {
-                Console.WriteLine("Place couldn't found!");
+                Utils.Error("Place couldn't found!");
                 return;
             }
 
@@ -61,24 +61,24 @@
         {
             if (ReservationList.Contains(reservation))
             {
-                Console.WriteLine("Reservation Id (" + reservation.GetId() + ") is already done!");
+                Utils.Error("Reservation Id (" + reservation.GetId() + ") is already done!");
                 return;
             }
 
             ReservationList.Add(reservation);
-            Console.WriteLine("Reservation Id (" + reservation.GetId() + ") is successfully done ✓");
+            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully done.");
         }
 
         public static void RemoveReservation(Reservation reservation)
         {
             if (!ReservationList.Contains(reservation))
             {
-                Console.WriteLine("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
+                Utils.Error("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
                 return;
             }
 
             ReservationList.Remove(reservation);
-            Console.WriteLine("Reservation Id (" + reservation.GetId() + ") is successfully removed ✓");
+            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed.");
         }
 
         public static void RemoveReservation(int reservationId)
@@ -87,7 +87,7 @@
 
             if (reservation == null)
             {
-                Console.WriteLine("Reservation couldn't found!");
+                Utils.Error("Reservation couldn't found!");
                 return;
             }
 
