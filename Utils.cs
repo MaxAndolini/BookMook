@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using static BookMook.Utils;
 
 namespace BookMook
 {
@@ -18,6 +19,20 @@ namespace BookMook
             PlaceType.HotelRoom,
             PlaceType.Apartment
         };
+
+        public enum ReservationSort
+        {
+            PlaceTypeAscending,
+            PlaceTypeDescending,
+            PlaceNameAscending,
+            PlaceNameDescending,
+            StartDateAscending,
+            StartDateDescending,
+            EndDateAscending,
+            EndDateDescending,
+            TotalPriceAscending,
+            TotalPriceDescending
+        }
 
         public static List<Place> Sort(PlaceSort sort, List<Place> places, bool message = false)
         {
@@ -48,6 +63,46 @@ namespace BookMook
             return places;
         }
 
+        public static List<Reservation> Sort(ReservationSort sort, List<Reservation> reservations, bool message = false)
+        {
+            switch (sort)
+            {
+                case ReservationSort.PlaceTypeAscending:
+                    reservations = reservations.OrderBy(a => Array.IndexOf(CustomPlaceTypeOrder, a.GetPlace().GetType())).ToList();
+                    break;
+                case ReservationSort.PlaceTypeDescending:
+                    reservations = reservations.OrderByDescending(a => Array.IndexOf(CustomPlaceTypeOrder, a.GetPlace().GetType())).ToList();
+                    break;
+                case ReservationSort.PlaceNameAscending:
+                    reservations = reservations.OrderBy(a => a.GetPlace().GetName()).ToList();
+                    break;
+                case ReservationSort.PlaceNameDescending:
+                    reservations = reservations.OrderByDescending(a => a.GetPlace().GetName()).ToList();
+                    break;
+                case ReservationSort.StartDateAscending:
+                    reservations = reservations.OrderBy(a => a.GetStartDate()).ToList();
+                    break;
+                case ReservationSort.StartDateDescending:
+                    reservations = reservations.OrderByDescending(a => a.GetStartDate()).ToList();
+                    break;
+                case ReservationSort.EndDateAscending:
+                    reservations = reservations.OrderBy(a => a.GetEndDate()).ToList();
+                    break;
+                case ReservationSort.EndDateDescending:
+                    reservations = reservations.OrderByDescending(a => a.GetEndDate()).ToList();
+                    break;
+                case ReservationSort.TotalPriceAscending:
+                    reservations = reservations.OrderBy(a => a.GetTotalPrice()).ToList();
+                    break;
+                case ReservationSort.TotalPriceDescending:
+                    reservations = reservations.OrderByDescending(a => a.GetTotalPrice()).ToList();
+                    break;
+            }
+
+            if (message) Console.WriteLine("Reservations sorted by " + Regex.Replace(sort.ToString(), "([a-z])_?([A-Z])", "$1 $2") + ".");
+
+            return reservations;
+        }
 
         public static void Question(string message)
         {

@@ -61,41 +61,41 @@
             return PlaceList.FirstOrDefault(m => m.GetId() == placeId);
         }
 
-        public static void AddReservation(Reservation reservation)
+        public static void AddReservation(Reservation reservation, bool message = false)
         {
             if (ReservationList.Contains(reservation))
             {
-                Utils.Error("Reservation Id (" + reservation.GetId() + ") is already done!");
+                if (message) Utils.Error("Reservation Id (" + reservation.GetId() + ") is already done!");
                 return;
             }
 
             ReservationList.Add(reservation);
-            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully done.");
+            if (message) Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully done.");
         }
 
-        public static void RemoveReservation(Reservation reservation)
+        public static void RemoveReservation(Reservation reservation, bool message = false)
         {
             if (!ReservationList.Contains(reservation))
             {
-                Utils.Error("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
+                if (message) Utils.Error("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
                 return;
             }
 
             ReservationList.Remove(reservation);
-            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed.");
+            if (message) Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed.");
         }
 
-        public static void RemoveReservation(int reservationId)
+        public static void RemoveReservation(int reservationId, bool message = false)
         {
             var reservation = GetReservation(reservationId);
 
             if (reservation == null)
             {
-                Utils.Error("Reservation couldn't found!");
+                if (message) Utils.Error("Reservation couldn't found!");
                 return;
             }
 
-            RemoveReservation(reservation);
+            RemoveReservation(reservation, message);
         }
 
         public static Reservation? GetReservation(int reservationId)

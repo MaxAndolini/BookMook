@@ -25,6 +25,20 @@ namespace BookMook
             return list;
         }
 
+        public List<Reservation> ShowMyReservedPlacesList(List<Reservation> reservationList, Utils.ReservationSort? sort = null)
+        {
+            List<Reservation> list = (sort != null) ? Utils.Sort((Utils.ReservationSort)sort, reservationList) : reservationList;
+
+            Console.WriteLine("\x1b[31;1;4m-----------My Reserved Places---------\u001b[37;24m");
+            for (int i = 0; i < list.Count; i++)
+            {
+                Console.WriteLine(i + ": " + list[i].GetShortInfo());
+            }
+            Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+
+            return list;
+        }
+
         public void AddPlace(Place place)
         {
             if (MyPlaces.Contains(place))
@@ -75,7 +89,7 @@ namespace BookMook
         {
             while (true)
             {
-                Menu menu = new(Name, new string[] { "Show All Places", "Show My Places", "Show My Reserved Places", "Add New Place", "Quit" });
+                Menu menu = new("Welcome " + Name + "!", new string[] { "Show All Places", "Show My Places", "Show My Reserved Places", "Add New Place", "Quit" });
                 int index = menu.Run();
                 if (index == 0)
                 {
@@ -207,22 +221,36 @@ namespace BookMook
                 else if (index == 2)
                 {
                     List<Reservation> myReservationsList = ReservationManager.GetReservationList().Where(r => r.GetRenter().Id == Id).ToList();
+                    List<Reservation> listReservations = new();
+                    Utils.ReservationSort? sort = null;
 
                     if (myReservationsList.Count != 0)
                     {
-                        Console.WriteLine("\x1b[31;1;4m-----------My Reserved Places---------\u001b[37;24m");
-                        for (int i = 0; i < myReservationsList.Count; i++)
+                        Utils.ReservationSort[] reservationSort = (Utils.ReservationSort[])Enum.GetValues(typeof(Utils.ReservationSort));
+                        string[] reservationSortList = Array.ConvertAll(reservationSort, x => Regex.Replace(x.ToString(), "([a-z])_?([A-Z])", "$1 $2"));
+
+                        Menu sortMenu = new("Do you want to sort reservation list?", reservationSortList.Concat(new string[] { "Skip" }).ToArray());
+                        int sortIndex = sortMenu.Run();
+
+                        if (sortIndex != reservationSort.Length)
                         {
-                            Console.WriteLine(i + ": " + myReservationsList[i].GetShortInfo());
+                            Console.Clear();
+                            Utils.Info(reservationSortList[sortIndex] + " is selected.");
+                            Thread.Sleep(1000);
                         }
-                        Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+
+                        sort = (sortIndex == reservationSort.Length) ? null : reservationSort[sortIndex];
                     }
 
                     while (true)
                     {
                         try
                         {
-                            if (myReservationsList.Count == 0)
+                            Console.Clear();
+
+                            listReservations = ShowMyReservedPlacesList(myReservationsList, sort);
+
+                            if (listReservations.Count == 0)
                             {
                                 Console.Clear();
                                 Utils.Error("My reserved places are empty!");
@@ -234,14 +262,14 @@ namespace BookMook
                             var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
-                            if (select < 0 || myReservationsList.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+                            if (select < 0 || listReservations.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
-                            Console.WriteLine(myReservationsList[select].ToString());
+                            Console.WriteLine(listReservations[select].ToString());
 
                             Menu deleteMenu = new("Do you want to cancel id (" + select + ") reservation?", new string[] { "Yes", "No" });
                             int deleteIndex = deleteMenu.Run();
 
-                            if (deleteIndex == 0) ReservationManager.RemoveReservation(myReservationsList[select]);
+                            if (deleteIndex == 0) ReservationManager.RemoveReservation(listReservations[select]);
 
                             Utils.Info("Press any key to proceed...");
                             Console.ReadKey(true);

@@ -1,4 +1,6 @@
-﻿namespace BookMook
+﻿using System.Text.RegularExpressions;
+
+namespace BookMook
 {
     internal class Rentee : Customer
     {
@@ -8,12 +10,64 @@
         {
         }
 
-        public void ShowMyReservationList()
+        public List<Reservation> ShowMyReservationList(Utils.ReservationSort? sort = null)
         {
-            for (int i = 0; i < MyReservations.Count; i++)
+            List<Reservation> list = (sort != null) ? Utils.Sort((Utils.ReservationSort)sort, MyReservations) : MyReservations;
+
+            Console.WriteLine("\x1b[31;1;4m-----------My Reservations---------\u001b[37;24m");
+            for (int i = 0; i < list.Count; i++)
             {
-                Console.WriteLine(i + "- " + MyReservations[i].GetShortInfo());
+                Console.WriteLine(i + ": " + list[i].GetShortInfo());
             }
+            Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+
+            return list;
+        }
+
+        public void AddReservation(Reservation reservation)
+        {
+            if (MyReservations.Contains(reservation))
+            {
+                Utils.Error("Reservation Id (" + reservation.GetId() + ") is already done!");
+                return;
+            }
+
+            MyReservations.Add(reservation);
+            ReservationManager.AddReservation(reservation);
+
+            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully done.");
+        }
+
+        public void RemoveReservation(Reservation reservation)
+        {
+            if (!MyReservations.Contains(reservation))
+            {
+                Utils.Error("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
+                return;
+            }
+
+            MyReservations.Remove(reservation);
+            ReservationManager.RemoveReservation(reservation);
+
+            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed.");
+        }
+
+        public void RemoveReservation(int reservationId)
+        {
+            var reservation = GetReservation(reservationId);
+
+            if (reservation == null)
+            {
+                Utils.Error("Reservation couldn't found!");
+                return;
+            }
+
+            RemoveReservation(reservation);
+        }
+
+        public Reservation? GetReservation(int reservationId)
+        {
+            return MyReservations.FirstOrDefault(m => m.GetId() == reservationId);
         }
 
         public void MakeComment(Place place, string comment)
@@ -36,94 +90,138 @@
         {
             while (true)
             {
-                Console.WriteLine("--------Menu for " + Name + "----------\n" +
-                "1- Show All Places\n" +
-                "2- Show My Reservations\n" +
-                "0- To Quit\n" +
-                "----------------------\n" +
-                "Please select one of the options");
-                String input = Console.ReadLine();
-                if (input == "1")
+                Menu menu = new("Welcome " + Name + "!", new string[] { "Show All Places", "Show My Reservations", "Quit" });
+                int index = menu.Run();
+                if (index == 0)
                 {
+                    List<Place> listPlaces = new();
+                    Utils.PlaceSort? sort = null;
+
+                    if (ReservationManager.GetPlaceList().Count != 0)
+                    {
+                        Utils.PlaceSort[] placeSort = (Utils.PlaceSort[])Enum.GetValues(typeof(Utils.PlaceSort));
+                        string[] placeSortList = Array.ConvertAll(placeSort, x => Regex.Replace(x.ToString(), "([a-z])_?([A-Z])", "$1 $2"));
+
+                        Menu sortMenu = new("Do you want to sort place list?", placeSortList.Concat(new string[] { "Skip" }).ToArray());
+                        int sortIndex = sortMenu.Run();
+
+                        if (sortIndex != placeSort.Length)
+                        {
+                            Console.Clear();
+                            Utils.Info(placeSortList[sortIndex] + " is selected.");
+                            Thread.Sleep(1000);
+                        }
+
+                        sort = (sortIndex == placeSort.Length) ? null : placeSort[sortIndex];
+                    }
+
                     while (true)
                     {
-                        ReservationManager.PrintPlaceList();
-                        Console.WriteLine("----------------------");
-                        Console.WriteLine("Select any place to see the detailed information!(0 to quit) Enter selection:");
-                        string selection = Console.ReadLine();
-                        if (selection == "0")
+                        try
                         {
+                            Console.Clear();
+
+                            listPlaces = ReservationManager.PrintPlaceList(sort);
+
+                            if (listPlaces.Count == 0)
+                            {
+                                Console.Clear();
+                                Utils.Error("Places are empty!");
+                                Thread.Sleep(1000);
+                                Console.Clear();
+                                break;
+                            }
+
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            if (select == null) throw new Exception("You must write a number!");
+                            if (select == -1) break;
+                            if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+
+                            Console.WriteLine(listPlaces[select].ToString());
+
+                            Utils.Info("Press any key to proceed...");
+                            Console.ReadKey(true);
+
                             break;
                         }
-                        if (Int32.Parse(selection) <= ReservationManager.GetPlaceList().Count)
+                        catch (Exception ex)
                         {
-                            Console.WriteLine(ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].ToString());
-                            Console.WriteLine("Do you want to check availability of this place ?(1 for YES, 2 for NO)");
-
-                            string selection2 = Console.ReadLine();
-                            if (selection2 == "1")
-                            {
-                                //Burada başlangıç ve çıkış tarihine göre kontrol edip sonrasında reservasyonu gerçekleştirilecek kod yazılmalı.
-
-                                /*
-                                Console.WriteLine("Please write down the star date and end date of your reservation\n");
-                                Console.WriteLine("Start date :");
-                                string Date = Console.ReadLine();
-                                string format = "dd-MM-yyyy";
-                                DateTime startDate = DateTime.ParseExact(Date, format, CultureInfo.InvariantCulture);
-
-                                Console.WriteLine("End date :");
-                                string date = Console.ReadLine();
-                             
-                                DateTime endDate = DateTime.ParseExact(date, format, CultureInfo.InvariantCulture);
-                                ReservationManager.GetAvailablePlaces(
-                                    ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].GetAddress(), startDate, endDate);
-                                ReservationManager.AddReservation(ReservationManager.GetReservation(ReservationManager.GetPlaceList()[Int32.Parse(selection) - 1].GetId()));
-                               */
-                            }
-                            else
-                            {
-                                //Boş kalsın
-                            }
-
+                            Console.Clear();
+                            Utils.Error(ex.Message);
+                            Thread.Sleep(1000);
+                            Console.Clear();
                         }
-                        Console.WriteLine("----------------------");
                     }
-
                 }
-
-                else if (input == "2")
+                else if (index == 1)
                 {
-                    ShowMyReservationList();
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("Select reservation to see the information! Enter selection:");
-                    string selection = Console.ReadLine();
-                    if (Int32.Parse(selection) <= MyReservations.Count)
+                    List<Reservation> listReservations = new();
+                    Utils.ReservationSort? sort = null;
+
+                    if (MyReservations.Count != 0)
                     {
-                        Console.WriteLine(MyReservations[Int32.Parse(selection) - 1].ToString());
-                        Console.WriteLine("Do you want to cancel this reservation ? (1 for YES, 2 for NO)");  // Maybe we can add changing the reservtion details option later(such as Start or End dates)
-                        string selection2 = Console.ReadLine();
-                        if (selection2 == "1")
+                        Utils.ReservationSort[] reservationSort = (Utils.ReservationSort[])Enum.GetValues(typeof(Utils.ReservationSort));
+                        string[] reservationSortList = Array.ConvertAll(reservationSort, x => Regex.Replace(x.ToString(), "([a-z])_?([A-Z])", "$1 $2"));
+
+                        Menu sortMenu = new("Do you want to sort reservation list?", reservationSortList.Concat(new string[] { "Skip" }).ToArray());
+                        int sortIndex = sortMenu.Run();
+
+                        if (sortIndex != reservationSort.Length)
                         {
-                            ReservationManager.RemoveReservation(MyReservations[Int32.Parse(selection) - 1]);
-                            MyReservations.Remove(MyReservations[Int32.Parse(selection) - 1]);
+                            Console.Clear();
+                            Utils.Info(reservationSortList[sortIndex] + " is selected.");
+                            Thread.Sleep(1000);
                         }
-                        else
-                        {
-                            //Leave empty for now
-                        }
+
+                        sort = (sortIndex == reservationSort.Length) ? null : reservationSort[sortIndex];
                     }
 
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Clear();
+
+                            listReservations = ShowMyReservationList(sort);
+
+                            if (listReservations.Count == 0)
+                            {
+                                Console.Clear();
+                                Utils.Error("My reservations are empty!");
+                                Thread.Sleep(1000);
+                                Console.Clear();
+                                break;
+                            }
+
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            if (select == null) throw new Exception("You must write a number!");
+                            if (select == -1) break;
+                            if (select < 0 || listReservations.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+
+                            Console.WriteLine(listReservations[select].ToString());
+
+                            Menu deleteMenu = new("Do you want to cancel id (" + select + ") reservation?", new string[] { "Yes", "No" });
+                            int deleteIndex = deleteMenu.Run();
+
+                            if (deleteIndex == 0) RemoveReservation(listReservations[select]);
+
+                            Utils.Info("Press any key to proceed...");
+                            Console.ReadKey(true);
+
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Clear();
+                            Utils.Error(ex.Message);
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                        }
+                    }
                 }
-
-
-                else if (input == "0")
+                else if (index == 2)
                 {
                     break;
-                }
-                else
-                {
-                    Console.WriteLine("Invalid Input!!!!!!!!!");
                 }
             }
         }
