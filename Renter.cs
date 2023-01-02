@@ -1,6 +1,5 @@
-﻿using System;
-using System.Net;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using static BookMook.Utils;
 
 namespace BookMook
 {
@@ -12,14 +11,18 @@ namespace BookMook
         {
         }
 
-        public void PrintMyPlaces()
+        public List<Place> PrintMyPlaces(Utils.PlaceSort? sort = null)
         {
+            List<Place> list = (sort != null) ? Utils.Sort((Utils.PlaceSort)sort, MyPlaces) : MyPlaces;
+
             Console.WriteLine("\x1b[31;1;4m-----------My Places---------\u001b[37;24m");
-            for (int i = 0; i < MyPlaces.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                Console.WriteLine(i + ": " + MyPlaces[i].GetShortInfo());
+                Console.WriteLine(i + ": " + list[i].GetShortInfo());
             }
             Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+
+            return list;
         }
 
         public void AddPlace(Place place)
@@ -31,8 +34,9 @@ namespace BookMook
             }
 
             MyPlaces.Add(place);
-            ReservationManager.GetPlaceList().Add(place);
-            Utils.Error(place.GetName() + " is successfully added to the list.");
+            ReservationManager.AddPlace(place);
+
+            Utils.Info(place.GetName() + " is successfully added to the list.");
         }
 
         public void RemovePlace(Place place)
@@ -44,7 +48,8 @@ namespace BookMook
             }
 
             MyPlaces.Remove(place);
-            ReservationManager.GetPlaceList().Remove(place);
+            ReservationManager.RemovePlace(place);
+
             Utils.Info(place.GetName() + " is successfully removed in the list.");
         }
 
@@ -74,13 +79,36 @@ namespace BookMook
                 int index = menu.Run();
                 if (index == 0)
                 {
-                    if (ReservationManager.GetPlaceList().Count != 0) ReservationManager.PrintPlaceList();
+                    List<Place> listPlaces = new();
+                    Utils.PlaceSort? sort = null;
+
+                    if (ReservationManager.GetPlaceList().Count != 0)
+                    {
+                        Utils.PlaceSort[] placeSort = (Utils.PlaceSort[])Enum.GetValues(typeof(Utils.PlaceSort));
+                        string[] placeSortList = Array.ConvertAll(placeSort, x => Regex.Replace(x.ToString(), "([a-z])_?([A-Z])", "$1 $2"));
+
+                        Menu sortMenu = new("Do you want to sort place list?", placeSortList.Concat(new string[] { "Skip" }).ToArray());
+                        int sortIndex = sortMenu.Run();
+
+                        if (sortIndex != placeSort.Length)
+                        {
+                            Console.Clear();
+                            Utils.Info(placeSortList[sortIndex] + " is selected.");
+                            Thread.Sleep(1000);
+                        }
+
+                        sort = (sortIndex == placeSort.Length) ? null : placeSort[sortIndex];
+                    }
 
                     while (true)
                     {
                         try
                         {
-                            if (ReservationManager.GetPlaceList().Count == 0)
+                            Console.Clear();
+
+                            listPlaces = ReservationManager.PrintPlaceList(sort);
+
+                            if (listPlaces.Count == 0)
                             {
                                 Console.Clear();
                                 Utils.Error("Places are empty!");
@@ -89,13 +117,15 @@ namespace BookMook
                                 break;
                             }
 
-                            Utils.Question("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:");
-                            var select = Convert.ToInt32(Console.ReadLine());
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
-                            if (select < 0 || ReservationManager.GetPlaceList().Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+                            if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
-                            Console.WriteLine(ReservationManager.GetPlaceList()[select].ToString());
-                            Thread.Sleep(1000);
+                            Console.WriteLine(listPlaces[select].ToString());
+
+                            Utils.Info("Press any key to proceed...");
+                            Console.ReadKey(true);
 
                             break;
                         }
@@ -110,13 +140,36 @@ namespace BookMook
                 }
                 else if (index == 1)
                 {
-                    if (MyPlaces.Count != 0) PrintMyPlaces();
+                    List<Place> listPlaces = new();
+                    Utils.PlaceSort? sort = null;
+
+                    if (MyPlaces.Count != 0)
+                    {
+                        Utils.PlaceSort[] placeSort = (Utils.PlaceSort[])Enum.GetValues(typeof(Utils.PlaceSort));
+                        string[] placeSortList = Array.ConvertAll(placeSort, x => Regex.Replace(x.ToString(), "([a-z])_?([A-Z])", "$1 $2"));
+
+                        Menu sortMenu = new("Do you want to sort place list?", placeSortList.Concat(new string[] { "Skip" }).ToArray());
+                        int sortIndex = sortMenu.Run();
+
+                        if (sortIndex != placeSort.Length)
+                        {
+                            Console.Clear();
+                            Utils.Info(placeSortList[sortIndex] + " is selected.");
+                            Thread.Sleep(1000);
+                        }
+
+                        sort = (sortIndex == placeSort.Length) ? null : placeSort[sortIndex];
+                    }
 
                     while (true)
                     {
                         try
                         {
-                            if (MyPlaces.Count == 0)
+                            Console.Clear();
+
+                            listPlaces = PrintMyPlaces(sort);
+
+                            if (listPlaces.Count == 0)
                             {
                                 Console.Clear();
                                 Utils.Error("My places are empty!");
@@ -125,18 +178,20 @@ namespace BookMook
                                 break;
                             }
 
-                            Utils.Question("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:");
-                            var select = Convert.ToInt32(Console.ReadLine());
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
-                            if (select < 0 || MyPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+                            if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
-                            Console.WriteLine(MyPlaces[select].ToString());
+                            Console.WriteLine(listPlaces[select].ToString());
 
                             Menu deleteMenu = new("Do you want to delete id (" + select + ") place?", new string[] { "Yes", "No" });
                             int deleteIndex = deleteMenu.Run();
 
-                            if (deleteIndex == 0) RemovePlace(MyPlaces[select]);
-                            Thread.Sleep(1000);
+                            if (deleteIndex == 0) RemovePlace(listPlaces[select]);
+
+                            Utils.Info("Press any key to proceed...");
+                            Console.ReadKey(true);
 
                             break;
                         }
@@ -176,8 +231,8 @@ namespace BookMook
                                 break;
                             }
 
-                            Utils.Question("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:");
-                            var select = Convert.ToInt32(Console.ReadLine());
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || myReservationsList.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
@@ -187,7 +242,9 @@ namespace BookMook
                             int deleteIndex = deleteMenu.Run();
 
                             if (deleteIndex == 0) ReservationManager.RemoveReservation(myReservationsList[select]);
-                            Thread.Sleep(1000);
+
+                            Utils.Info("Press any key to proceed...");
+                            Console.ReadKey(true);
 
                             break;
                         }
@@ -248,8 +305,8 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    Utils.Question("What is the name of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
-                                    var select = Console.ReadLine();
+                                    var select = Utils.ReadLine("What is the name of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                    if (select == null) throw new Exception("You must write a string!");
                                     if (select == "-1")
                                     {
                                         step--;
@@ -289,8 +346,8 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    Utils.Question("What is the price per day of your place (Ex: 55.99) \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
-                                    var select = Console.ReadLine();
+                                    var select = Utils.ReadLine("What is the price per day of your place (Ex: 55.99) \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                    if (select == null) throw new Exception("You must write a string!");
                                     if (select == "-1")
                                     {
                                         step--;
@@ -330,8 +387,8 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    Utils.Question("What is the address of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
-                                    var select = Console.ReadLine();
+                                    var select = Utils.ReadLine("What is the address of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                    if (select == null) throw new Exception("You must write a string!");
                                     if (select == "-1")
                                     {
                                         step--;
@@ -371,8 +428,8 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    Utils.Question("What is the guest limit of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
-                                    var select = Convert.ToInt32(Console.ReadLine());
+                                    var select = Utils.ReadLine("What is the guest limit of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
                                         step--;
@@ -411,8 +468,8 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    Utils.Question("What is the flat number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
-                                    var select = Convert.ToInt32(Console.ReadLine());
+                                    var select = Utils.ReadLine("What is the flat number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
                                         step--;
@@ -451,8 +508,8 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    Utils.Question("What is the room number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:");
-                                    var select = Convert.ToInt32(Console.ReadLine());
+                                    var select = Utils.ReadLine("What is the room number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
                                         step--;
@@ -653,15 +710,17 @@ namespace BookMook
 
                             Place new_place = new(Place.TotalPlaceNumber, placeType, this, name, price, address, guestLimit, flatNumber, roomNumber, hasFreeWifi, hasSpareBathroom, isSmokingAllowed, hasPool, hasGarden, hasPrivateBeach, hasParkingArea);
                             AddPlace(new_place);
-                            ReservationManager.AddPlace(new_place);
+
+                            Utils.Info("Press any key to proceed...");
+                            Console.ReadKey(true);
 
                             break;
                         }
                     }
                 }
-                else if (index == 6)
+                else if (index == 4)
                 {
-                    Environment.Exit(0);
+                    break;
                 }
             }
         }

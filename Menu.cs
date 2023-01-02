@@ -19,7 +19,7 @@
             Console.CursorVisible = false;
 
             Console.WriteLine("\x1b[37;1;4m" + Prompt + "\n");
-            Utils.Info("\x1b[37;1;4mUse \u001b[32m▲\u001b[37m and \u001b[32m▼\u001b[37m to navigate and press \u001b[32mEnter/Return\x1b[37m to select:");
+            Utils.Info("\x1b[37;1;4mUse \u001b[32m▲\u001b[37m and \u001b[32m▼\u001b[37m to navigate and press \u001b[32mEnter/Return\x1b[37m to select:\u001b[24m");
 
             for (int i = 0; i < Options.Length; i++)
             {
@@ -81,7 +81,6 @@
             }
 
             Console.Clear();
-            Console.CursorVisible = true;
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Black;
 
