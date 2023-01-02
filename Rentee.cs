@@ -14,12 +14,15 @@ namespace BookMook
         {
             List<Reservation> list = (sort != null) ? Utils.Sort((Utils.ReservationSort)sort, MyReservations) : MyReservations;
 
-            Console.WriteLine("\x1b[31;1;4m-----------My Reservations---------\u001b[37;24m");
-            for (int i = 0; i < list.Count; i++)
+            if (list.Count > 0)
             {
-                Console.WriteLine(i + ": " + list[i].GetShortInfo());
+                Console.WriteLine("\x1b[31;1;4m-----------My Reservations---------\u001b[37;24m");
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Console.WriteLine(i + ": " + list[i].GetShortInfo());
+                }
+                Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
             }
-            Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
 
             return list;
         }
