@@ -72,9 +72,18 @@
             }
             else if(select == 2)
             {
+               
                 var amount = Utils.ReadLine("How much money do you want to withdraw? \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
-                CreditCard.WithdrawFromWallet(Wallet, amount);
-                Utils.Info("The " + amount + " of money successfully withdrawed from your wallet!!!");
+                if(amount <= Wallet.Balance)
+                {
+                    CreditCard.WithdrawFromWallet(Wallet, amount);
+                    Utils.Info("The " + amount + " of money successfully withdrawed from your wallet!!!");
+                }
+                else
+                {
+                    Utils.Error("There is no enough money in the wallet");
+                }
+                
                 
             }
             else
