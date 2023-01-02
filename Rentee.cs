@@ -282,10 +282,9 @@ namespace BookMook
                             if (select == -1) break;
                             if (select < 0 || listReservations.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
-                            Console.WriteLine(listReservations[select].ToString());
-                            Utils.Info("Press any key to proceed...");
-                            Console.ReadKey(true);
-                            Menu deleteMenu = new("Do you want to cancel id (" + select + ") reservation?(%10 fee will be deducted)", new string[] { "Yes", "No" });
+                            
+
+                            Menu deleteMenu = new(listReservations[select].ToString()+"\nDo you want to cancel id (" + select + ") reservation?(%10 fee will be deducted)", new string[] { "Yes", "No" });
                             int deleteIndex = deleteMenu.Run();
 
                             if (deleteIndex == 0) RemoveReservation(listReservations[select]);
