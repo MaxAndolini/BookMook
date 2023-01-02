@@ -6,6 +6,7 @@ namespace BookMook
     {
         private List<Reservation> MyReservations = new();
 
+
         public Rentee(int id, string name, string emailAddress, string password, Wallet wallet, CreditCard creditCard) : base(id, name, emailAddress, password, wallet, creditCard)
         {
         }
@@ -48,11 +49,12 @@ namespace BookMook
                 Utils.Error("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
                 return;
             }
-
+            double fee = reservation.GetTotalPrice()-reservation.GetTotalPrice() * 0.9;
+            reservation.GetRentee().GetWallet().IncreaseMoney(reservation.GetTotalPrice() * 0.9);
+            reservation.GetRenter().GetWallet().DecreaseMoney(reservation.GetTotalPrice() * 0.9);
             MyReservations.Remove(reservation);
             ReservationManager.RemoveReservation(reservation);
-
-            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed.");
+            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed.(The "+fee+" amount of fee deducted!)");
         }
 
         public void RemoveReservation(int reservationId)
@@ -93,7 +95,7 @@ namespace BookMook
         {
             while (true)
             {
-                Menu menu = new("Welcome " + Name + "!", new string[] { "Show All Places", "Show My Reservations", "Quit" });
+                Menu menu = new("Welcome " + Name + "!", new string[] { "Show All Places", "Show My Reservations","Show My Wallet", "Quit" });
                 int index = menu.Run();
                 if (index == 0)
                 {
@@ -140,8 +142,87 @@ namespace BookMook
                             if (select == -1) break;
                             if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
-                            Console.WriteLine(listPlaces[select].ToString());
+                            Place current_place = listPlaces[select];
+                            Console.WriteLine(current_place.ToString());
 
+
+                            //Here we ask if you want to book this place
+                            var select2 = Utils.ReadLine("Do you want to check availability of this place(Yes: 1, No: 2) ?\u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            if (select2 == null) throw new Exception("You must write a number!");
+                            if (select2 == -1) break;
+                            else if (select2 == 2) break;
+                            else if (select2 == 1)
+                            {
+                                Console.Clear();
+
+                                Utils.Info("-Start Date(day/month/year)-\u001b[32m(Quit: -1)\x1b");
+                                var day_start = Utils.ReadLine("Please enter the DAY of your START Date", typeof(int));
+                                var month_start = Utils.ReadLine("Please enter the MONTH of your START Date(January = 1, February = 2...)", typeof(int));
+                                var year_start = Utils.ReadLine("Please enter the YEAR of your START Date(2022, 2023...)", typeof(int));
+
+                                Console.Clear();
+
+                                Utils.Info("-End Date(day/month/year)-\u001b[32m(Quit: -1)\x1b");
+                                var day_end = Utils.ReadLine("Please enter the DAY of your END Date ", typeof(int));
+                                var month_end = Utils.ReadLine("Please enter the MONTH of your END Date(January = 1, February = 2...) ", typeof(int));
+                                var year_end = Utils.ReadLine("Please enter the YEAR of your END Date(2022, 2023...) ", typeof(int));
+
+                                Console.Clear();
+                
+                                Utils.Info("Start date = "+day_start+"/"+month_start+"/"+year_start);
+                                Utils.Info("End date = " + day_end + "/" + month_end + "/" + year_end);
+                                Utils.Info("Your Reservation information is being checked...");
+
+
+                                DateTime startDate = new DateTime(year_start, month_start, day_start);
+                                DateTime endDate = new DateTime(year_end, month_end, day_end);
+
+                                if (ReservationManager.GetAvailablePlaces(startDate, endDate).Contains(current_place)){
+                                    Utils.Info("The place is Available during this period!!!");
+
+                                    var numberOfGuests = Utils.ReadLine("Please enter the number of the guests:", typeof(int));
+                                    if (numberOfGuests <= current_place.GetGuestLimit()) {
+                                        Console.Clear();
+                                        Utils.Info("-----------Reservation Information-------------");
+                                        Utils.Info(current_place.ToString());
+                                        Utils.Info("Start date = " + day_start + "/" + month_start + "/" + year_start);
+                                        Utils.Info("End date = " + day_end + "/" + month_end + "/" + year_end);
+                                        Utils.Info("Number of guests = " + numberOfGuests);
+                                        double Price = (endDate - startDate).TotalDays * current_place.GetPrice();
+                                        Utils.Info("Price = "+Price);
+                                        Utils.Info("-----------------------------------------------");
+                                        var select3 = Utils.ReadLine("Do you want to book this place ?(Yes: 1, No: 2):", typeof(int));
+                                        if (select3 == 2) break;
+                                        if(select3 == 1)
+                                        {
+                                            if (Wallet.Balance >= Price)
+                                            {
+                                                Wallet.DecreaseMoney(Price);
+                                                current_place.GetRenter().GetWallet().IncreaseMoney(Price*0.9);
+                                                var specialRequest = Utils.ReadLine("Please enter if you have any special request", typeof(int));
+                                                Reservation new_reservation = new Reservation(ReservationManager.GetReservationList().Count==0?0:(ReservationManager.GetReservationList()[-1].GetId()+1), current_place.GetRenter(), this, current_place, numberOfGuests, specialRequest, startDate, endDate, Price);
+                                                ReservationManager.AddReservation(new_reservation);
+                                                MyReservations.Add(new_reservation);
+                                                Utils.Info("Reservation is Successfully Made, Have a good Holiday :)");
+
+                                            }
+                                            else
+                                            {
+                                                Utils.Error("You do not have enough Money for this Reservation!!!");
+                                            }
+                                            
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Utils.Error("The capacity of the room exceeds!"+"(The Capacity = "+current_place.GetGuestLimit());
+                                    }
+                                }
+                                else
+                                {
+                                    Utils.Error("The place is not available for these dates!");
+                                }
+                            }
                             Utils.Info("Press any key to proceed...");
                             Console.ReadKey(true);
 
@@ -202,8 +283,9 @@ namespace BookMook
                             if (select < 0 || listReservations.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
                             Console.WriteLine(listReservations[select].ToString());
-
-                            Menu deleteMenu = new("Do you want to cancel id (" + select + ") reservation?", new string[] { "Yes", "No" });
+                            Utils.Info("Press any key to proceed...");
+                            Console.ReadKey(true);
+                            Menu deleteMenu = new("Do you want to cancel id (" + select + ") reservation?(%10 fee will be deducted)", new string[] { "Yes", "No" });
                             int deleteIndex = deleteMenu.Run();
 
                             if (deleteIndex == 0) RemoveReservation(listReservations[select]);
@@ -223,6 +305,10 @@ namespace BookMook
                     }
                 }
                 else if (index == 2)
+                {
+                    ShowMyWallet();
+                }
+                else if (index == 3)
                 {
                     break;
                 }

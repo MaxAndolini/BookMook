@@ -26,7 +26,6 @@
                 if (message) Utils.Error(place.GetName() + " is already in place list!");
                 return;
             }
-
             PlaceList.Add(place);
             if (message) Utils.Info(place.GetName() + " is successfully added to the list.");
         }
@@ -103,10 +102,9 @@
             return ReservationList.FirstOrDefault(m => m.GetId() == reservationId);
         }
 
-        public static List<Place> GetAvailablePlaces(string address, DateTime startDate, DateTime endDate)
+        public static List<Place> GetAvailablePlaces( DateTime startDate, DateTime endDate)
         {
-            return PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate)
-                                                                  && p.GetAddress().Contains(address)).ToList();
+            return PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate)).ToList();
         }
 
         public static List<Place> GetAvailablePlacesWithFilter(PlaceFilter placeFilter)

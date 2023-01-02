@@ -8,7 +8,6 @@
 
     internal class Place
     {
-        public static int TotalPlaceNumber = 0;
         private int Id;
         private PlaceType Type;
         private Renter Renter;
@@ -31,7 +30,6 @@
 
         public Place(int id, PlaceType type, Renter renter, string name, double price, string address, int guestLimit, int flatNumber, int roomNumber, bool hasFreeWifi, bool hasSpareBathroom, bool isSmokingAllowed, bool hasPool, bool hasGarden, bool hasPrivateBeach, bool hasParkingArea)
         {
-            TotalPlaceNumber++;
             Id = id;
             Type = type;
             Renter = renter;

@@ -43,7 +43,7 @@
             }
         }
 
-        public void WithdrawToWallet(Wallet wallet, double price)
+        public void WithdrawFromWallet(Wallet wallet, double price)
         {
             if (wallet != null)
             {
