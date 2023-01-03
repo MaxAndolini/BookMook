@@ -7,10 +7,14 @@
         static void Main(string[] args)
         {
             Utils.Logo();
-            ReservationManager.RenterList = FileManager.Read<List<Renter>>("RenterList.bin");
-            ReservationManager.RenteeList = FileManager.Read<List<Rentee>>("RenteeList.bin");
-            ReservationManager.PlaceList = FileManager.Read<List<Place>>("PlaceList.bin");
-            ReservationManager.ReservationList = FileManager.Read<List<Reservation>>("ReservationList.bin");
+            List<Renter> renterList = FileManager.Read<List<Renter>>("RenterList.bin");
+            ReservationManager.RenterList = renterList ?? (new());
+            List<Rentee> renteeList = FileManager.Read<List<Rentee>>("RenteeList.bin");
+            ReservationManager.RenteeList = renteeList ?? (new());
+            List<Place> placeList = FileManager.Read<List<Place>>("PlaceList.bin");
+            ReservationManager.PlaceList = placeList ?? (new());
+            List<Reservation> reservationList = FileManager.Read<List<Reservation>>("ReservationList.bin");
+            ReservationManager.ReservationList = reservationList ?? (new());
 
             if (ReservationManager.RenterList.Count == 0)
             {
