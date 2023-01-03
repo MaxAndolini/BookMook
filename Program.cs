@@ -39,6 +39,9 @@
             {
                 Rentee rentee = ReservationManager.RenteeList[0];
                 rentee.ShowMenu();
+
+                Renter renter = ReservationManager.RenterList[0];
+                renter.ShowMenu();
             }
 
 

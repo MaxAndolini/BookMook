@@ -382,8 +382,8 @@ namespace BookMook
                                             Reservation new_reservation = new(ReservationManager.GetReservationList().Count == 0 ? 0 : (ReservationManager.GetReservationList().Last().GetId() + 1), current_place.GetRenter(), this, current_place, numberOfGuests, select2, startDate, endDate, price);
                                             AddReservation(new_reservation);
 
-                                            Thread.Sleep(1000);
-                                            Console.Clear();
+                                            Utils.Info("Press any key to proceed...");
+                                            Console.ReadKey(true);
                                             step = -1;
 
                                             break;

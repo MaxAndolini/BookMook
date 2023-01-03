@@ -165,9 +165,9 @@ namespace BookMook
                 }
                 else if (desiredType == typeof(double))
                 {
-                    if (double.TryParse(input, out double doubleResult))
+                    if (Decimal.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal decimalResult))
                     {
-                        return doubleResult;
+                        return (double)decimalResult;
                     }
                 }
                 else
