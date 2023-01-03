@@ -1,9 +1,12 @@
 ﻿namespace BookMook
 {
+    [Serializable]
     internal class ReservationManager
     {
-        private static List<Place> PlaceList = new();
-        private static List<Reservation> ReservationList = new();
+        public static List<Renter> RenterList = new List<Renter>();
+        public static List<Rentee> RenteeList = new List<Rentee>();
+        public static List<Place> PlaceList = new List<Place>();
+        public static List<Reservation> ReservationList = new();
 
         public static List<Place> PrintPlaceList(Utils.PlaceSort? sort = null)
         {

@@ -6,6 +6,7 @@
         Apartment
     }
 
+    [Serializable]
     internal class Place
     {
         private int Id;

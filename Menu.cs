@@ -1,5 +1,6 @@
 ﻿namespace BookMook
 {
+    [Serializable]
     internal class Menu
     {
         private string Prompt;

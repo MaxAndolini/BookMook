@@ -8,7 +8,7 @@
         Discover,
         Jcb
     }
-
+    [Serializable]
     internal class CreditCard
     {
         protected int Id;

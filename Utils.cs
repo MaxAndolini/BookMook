@@ -3,6 +3,7 @@ using static BookMook.Utils;
 
 namespace BookMook
 {
+    [Serializable]
     internal class Utils
     {
         public enum PlaceSort

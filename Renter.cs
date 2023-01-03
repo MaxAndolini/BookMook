@@ -3,6 +3,7 @@ using static BookMook.Utils;
 
 namespace BookMook
 {
+    [Serializable]
     internal class Renter : Customer
     {
         private List<Place> MyPlaces = new();
@@ -707,7 +708,7 @@ namespace BookMook
                             Thread.Sleep(1000);
                             Console.Clear();
 
-                            Place new_place = new((Program.placeList[-1].GetId()+1), placeType, this, name, price, address, guestLimit, flatNumber, roomNumber, hasFreeWifi, hasSpareBathroom, isSmokingAllowed, hasPool, hasGarden, hasPrivateBeach, hasParkingArea);
+                            Place new_place = new((ReservationManager.PlaceList.Last().GetId()+1), placeType, this, name, price, address, guestLimit, flatNumber, roomNumber, hasFreeWifi, hasSpareBathroom, isSmokingAllowed, hasPool, hasGarden, hasPrivateBeach, hasParkingArea);
                             AddPlace(new_place);
 
                             Utils.Info("Press any key to proceed...");

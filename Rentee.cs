@@ -2,6 +2,7 @@
 
 namespace BookMook
 {
+    [Serializable]
     internal class Rentee : Customer
     {
         private List<Reservation> MyReservations = new();
@@ -200,7 +201,7 @@ namespace BookMook
                                                 Wallet.DecreaseMoney(Price);
                                                 current_place.GetRenter().GetWallet().IncreaseMoney(Price*0.9);
                                                 var specialRequest = Utils.ReadLine("Please enter if you have any special request", typeof(int));
-                                                Reservation new_reservation = new Reservation(ReservationManager.GetReservationList().Count==0?0:(ReservationManager.GetReservationList()[-1].GetId()+1), current_place.GetRenter(), this, current_place, numberOfGuests, specialRequest, startDate, endDate, Price);
+                                                Reservation new_reservation = new Reservation(ReservationManager.GetReservationList().Count==0?0:(ReservationManager.GetReservationList().Last().GetId()+1), current_place.GetRenter(), this, current_place, numberOfGuests, specialRequest, startDate, endDate, Price);
                                                 ReservationManager.AddReservation(new_reservation);
                                                 MyReservations.Add(new_reservation);
                                                 Utils.Info("Reservation is Successfully Made, Have a good Holiday :)");
