@@ -3,16 +3,16 @@
     [Serializable]
     internal class ReservationManager
     {
-        public static List<Renter> RenterList = new List<Renter>();
-        public static List<Rentee> RenteeList = new List<Rentee>();
-        public static List<Place> PlaceList = new List<Place>();
+        public static List<Renter> RenterList = new();
+        public static List<Rentee> RenteeList = new();
+        public static List<Place> PlaceList = new();
         public static List<Reservation> ReservationList = new();
 
         public static List<Place> PrintPlaceList(Utils.PlaceSort? sort = null)
         {
             List<Place> list = (sort != null) ? Utils.Sort((Utils.PlaceSort)sort, PlaceList) : PlaceList;
 
-            Console.WriteLine("\x1b[31;1;4m-----------All Places---------\u001b[37;24m");
+            Console.WriteLine("\x1b[31;1;4m-----------All Places---------\x1b[37;24m");
             for (int i = 0; i < list.Count; i++)
             {
                 Console.WriteLine(i + ": " + list[i].GetName() + " (" + list[i].GetAddress() + ")");
@@ -105,7 +105,7 @@
             return ReservationList.FirstOrDefault(m => m.GetId() == reservationId);
         }
 
-        public static List<Place> GetAvailablePlaces( DateTime startDate, DateTime endDate)
+        public static List<Place> GetAvailablePlaces(DateTime startDate, DateTime endDate)
         {
             return PlaceList.Where(p => !ReservationList.Any(r => r.GetPlace() == p && r.GetStartDate() >= startDate && r.GetEndDate() < endDate)).ToList();
         }

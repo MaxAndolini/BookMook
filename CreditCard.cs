@@ -8,6 +8,7 @@
         Discover,
         Jcb
     }
+
     [Serializable]
     internal class CreditCard
     {

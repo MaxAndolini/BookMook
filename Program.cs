@@ -3,10 +3,10 @@
     [Serializable]
     internal class Program
     {
-        
+
         static void Main(string[] args)
         {
-            Logo();
+            Utils.Logo();
             ReservationManager.RenterList = FileManager.Read<List<Renter>>("RenterList.bin");
             ReservationManager.RenteeList = FileManager.Read<List<Rentee>>("RenteeList.bin");
             ReservationManager.PlaceList = FileManager.Read<List<Place>>("PlaceList.bin");
@@ -36,9 +36,9 @@
                 Rentee rentee = ReservationManager.RenteeList[0];
                 rentee.ShowMenu();
             }
-            
 
-            
+
+
             //rentee.ShowMenu();
             //renter.ShowMenu();
 
@@ -46,44 +46,6 @@
             FileManager.Write("RenteeList.bin", ReservationManager.RenteeList);
             FileManager.Write("PlaceList.bin", ReservationManager.PlaceList);
             FileManager.Write("ReservationList.bin", ReservationManager.ReservationList);
-        }
-
-        public static void Logo()
-        {
-            Console.Clear();
-            Console.CursorVisible = false;
-
-            string logo = "\x1b[36m" + @"
-▀█████████▄   ▄██████▄   ▄██████▄     ▄█   ▄█▄   ▄▄▄▄███▄▄▄▄    ▄██████▄   ▄██████▄     ▄█   ▄█▄ 
-  ███    ███ ███    ███ ███    ███   ███ ▄███▀ ▄██▀▀▀███▀▀▀██▄ ███    ███ ███    ███   ███ ▄███▀ 
-  ███    ███ ███    ███ ███    ███   ███▐██▀   ███   ███   ███ ███    ███ ███    ███   ███▐██▀   
- ▄███▄▄▄██▀  ███    ███ ███    ███  ▄█████▀    ███   ███   ███ ███    ███ ███    ███  ▄█████▀    
-▀▀███▀▀▀██▄  ███    ███ ███    ███ ▀▀█████▄    ███   ███   ███ ███    ███ ███    ███ ▀▀█████▄    
-  ███    ██▄ ███    ███ ███    ███   ███▐██▄   ███   ███   ███ ███    ███ ███    ███   ███▐██▄   
-  ███    ███ ███    ███ ███    ███   ███ ▀███▄ ███   ███   ███ ███    ███ ███    ███   ███ ▀███▄ 
-▄█████████▀   ▀██████▀   ▀██████▀    ███   ▀█▀  ▀█   ███   █▀   ▀██████▀   ▀██████▀    ███   ▀█▀ 
-                                     ▀                                                 ▀         
-Welcome to the BookMook, press any key to proceed...
-";
-
-            using (StringReader reader = new(logo))
-            {
-                string? line = string.Empty;
-                int verticalStart = (Console.WindowHeight - logo.Split("\n").Length) / 2;
-                do
-                {
-                    line = reader.ReadLine();
-                    if (line != null)
-                    {
-                        Console.SetCursorPosition((Console.WindowWidth - line.Length) / 2, verticalStart);
-                        Console.WriteLine(line);
-                        ++verticalStart;
-                    }
-                } while (line != null);
-            }
-
-            Console.ResetColor();
-            Console.ReadKey(true);
         }
     }
 }

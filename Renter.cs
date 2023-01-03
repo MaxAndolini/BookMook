@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using static BookMook.Utils;
 
 namespace BookMook
 {
@@ -7,21 +6,41 @@ namespace BookMook
     internal class Renter : Customer
     {
         private List<Place> MyPlaces = new();
+
         public Renter(int id, string name, string emailAddress, string password, Wallet wallet, CreditCard creditCard) : base(id, name, emailAddress, password, wallet, creditCard)
         {
-           
         }
 
         public List<Place> PrintMyPlaces(Utils.PlaceSort? sort = null)
         {
             List<Place> list = (sort != null) ? Utils.Sort((Utils.PlaceSort)sort, MyPlaces) : MyPlaces;
 
-            Console.WriteLine("\x1b[31;1;4m-----------My Places---------\u001b[37;24m");
-            for (int i = 0; i < list.Count; i++)
+            if (list.Count > 0)
             {
-                Console.WriteLine(i + ": " + list[i].GetShortInfo());
+                Console.WriteLine("\x1b[31;1;4m-----------My Places---------\x1b[37;24m");
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Console.WriteLine(i + ": " + list[i].GetShortInfo());
+                }
+                Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
             }
-            Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+
+            return list;
+        }
+
+        public List<Reservation> ShowMyReservedPlacesList(List<Reservation> reservationList, Utils.ReservationSort? sort = null)
+        {
+            List<Reservation> list = (sort != null) ? Utils.Sort((Utils.ReservationSort)sort, reservationList) : reservationList;
+
+            if (list.Count > 0)
+            {
+                Console.WriteLine("\x1b[31;1;4m-----------My Reserved Places---------\x1b[37;24m");
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Console.WriteLine(i + ": " + list[i].GetShortInfo());
+                }
+                Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+            }
 
             return list;
         }
@@ -76,7 +95,7 @@ namespace BookMook
         {
             while (true)
             {
-                Menu menu = new(Name, new string[] { "Show All Places", "Show My Places", "Show My Reserved Places", "Add New Place","Show My Wallet", "Quit" });
+                Menu menu = new("Welcome " + Name + "!", new string[] { "Show All Places", "Show My Places", "Show My Reserved Places", "Add New Place", "Show My Wallet", "Quit" });
                 int index = menu.Run();
                 if (index == 0)
                 {
@@ -118,7 +137,7 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
@@ -179,20 +198,17 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
-                            Console.WriteLine(listPlaces[select].ToString());
-
-                            Menu deleteMenu = new("Do you want to delete id (" + select + ") place?", new string[] { "Yes", "No" });
+                            Menu deleteMenu = new(listPlaces[select].ToString() + "\n\x1b[37;1;4mDo you want to delete id (" + select + ") place?", new string[] { "Yes", "No" });
                             int deleteIndex = deleteMenu.Run();
 
                             if (deleteIndex == 0) RemovePlace(listPlaces[select]);
-
-                            Utils.Info("Press any key to proceed...");
-                            Console.ReadKey(true);
+                            Thread.Sleep(1000);
+                            Console.Clear();
 
                             break;
                         }
@@ -208,22 +224,36 @@ namespace BookMook
                 else if (index == 2)
                 {
                     List<Reservation> myReservationsList = ReservationManager.GetReservationList().Where(r => r.GetRenter().Id == Id).ToList();
+                    List<Reservation> listReservations = new();
+                    Utils.ReservationSort? sort = null;
 
                     if (myReservationsList.Count != 0)
                     {
-                        Console.WriteLine("\x1b[31;1;4m-----------My Reserved Places---------\u001b[37;24m");
-                        for (int i = 0; i < myReservationsList.Count; i++)
+                        Utils.ReservationSort[] reservationSort = (Utils.ReservationSort[])Enum.GetValues(typeof(Utils.ReservationSort));
+                        string[] reservationSortList = Array.ConvertAll(reservationSort, x => Regex.Replace(x.ToString(), "([a-z])_?([A-Z])", "$1 $2"));
+
+                        Menu sortMenu = new("Do you want to sort reservation list?", reservationSortList.Concat(new string[] { "Skip" }).ToArray());
+                        int sortIndex = sortMenu.Run();
+
+                        if (sortIndex != reservationSort.Length)
                         {
-                            Console.WriteLine(i + ": " + myReservationsList[i].GetShortInfo());
+                            Console.Clear();
+                            Utils.Info(reservationSortList[sortIndex] + " is selected.");
+                            Thread.Sleep(1000);
                         }
-                        Console.WriteLine("\x1b[31;1;4m------------------------------\x1b[37;24m");
+
+                        sort = (sortIndex == reservationSort.Length) ? null : reservationSort[sortIndex];
                     }
 
                     while (true)
                     {
                         try
                         {
-                            if (myReservationsList.Count == 0)
+                            Console.Clear();
+
+                            listReservations = ShowMyReservedPlacesList(myReservationsList, sort);
+
+                            if (listReservations.Count == 0)
                             {
                                 Console.Clear();
                                 Utils.Error("My reserved places are empty!");
@@ -232,19 +262,17 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \u001b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
-                            if (select < 0 || myReservationsList.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
+                            if (select < 0 || listReservations.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
-                            Menu deleteMenu = new(myReservationsList[select].ToString() + "\nDo you want to cancel id (" + select + ") reservation?(%10 fee will be deducted)", new string[] { "Yes", "No" });
-
+                            Menu deleteMenu = new(listReservations[select].ToString() + "\n\x1b[37;1;4mDo you want to cancel id (" + select + ") reservation?", new string[] { "Yes", "No" });
                             int deleteIndex = deleteMenu.Run();
 
-                            if (deleteIndex == 0) ReservationManager.RemoveReservation(myReservationsList[select]);
-
-                            Utils.Info("Press any key to proceed...");
-                            Console.ReadKey(true);
+                            if (deleteIndex == 0) ReservationManager.RemoveReservation(listReservations[select]);
+                            Thread.Sleep(1000);
+                            Console.Clear();
 
                             break;
                         }
@@ -305,7 +333,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the name of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                    var select = Utils.ReadLine("What is the name of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
                                     if (select == null) throw new Exception("You must write a string!");
                                     if (select == "-1")
                                     {
@@ -318,7 +346,7 @@ namespace BookMook
                                         step = -1;
                                         break;
                                     }
-                                    if (string.IsNullOrEmpty(select)) throw new Exception("Name can not be empty!");
+                                    if (string.IsNullOrEmpty(select)) throw new Exception("Name can't be empty!");
                                     if (select.Length < 2 || select.Length > 32) throw new Exception("Name must be between 2-32 character!");
 
                                     name = select;
@@ -346,23 +374,22 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the price per day of your place (Ex: 55.99) \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
-                                    if (select == null) throw new Exception("You must write a string!");
-                                    if (select == "-1")
+                                    var select = Utils.ReadLine("What is the price per day of your place (Ex: 55.99) \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(double));
+                                    if (select == null) throw new Exception("You must write a double!");
+                                    if (select == -1)
                                     {
                                         step--;
                                         Console.Clear();
                                         break;
                                     }
-                                    else if (select == "-2")
+                                    else if (select == -2)
                                     {
                                         step = -1;
                                         break;
                                     }
-                                    if (string.IsNullOrEmpty(select)) throw new Exception("Price can not be empty!");
-                                    if (!Regex.IsMatch(select, @"^(?!0*\.0+$)\d*(?:\.\d+)?$")) throw new Exception("Price must be double!");
+                                    if (select < 0) throw new Exception("Price can't be less than 0!");
 
-                                    price = Convert.ToDouble(select);
+                                    price = select;
                                     Console.Clear();
                                     Utils.Info(select + " is selected.");
                                     Thread.Sleep(1000);
@@ -387,7 +414,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the address of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                    var select = Utils.ReadLine("What is the address of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
                                     if (select == null) throw new Exception("You must write a string!");
                                     if (select == "-1")
                                     {
@@ -400,7 +427,7 @@ namespace BookMook
                                         step = -1;
                                         break;
                                     }
-                                    if (string.IsNullOrEmpty(select)) throw new Exception("Address can not be empty!");
+                                    if (string.IsNullOrEmpty(select)) throw new Exception("Address can't be empty!");
                                     if (select.Length < 10 || select.Length > 60) throw new Exception("Address must be between 10-60 character!");
 
                                     address = select;
@@ -428,7 +455,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the guest limit of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    var select = Utils.ReadLine("What is the guest limit of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
                                     if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
@@ -441,7 +468,7 @@ namespace BookMook
                                         step = -1;
                                         break;
                                     }
-                                    if (select < 0) throw new Exception("Price can not be less than 0!");
+                                    if (select < 0) throw new Exception("Guest Limit can't be less than 0!");
 
                                     guestLimit = select;
                                     Console.Clear();
@@ -468,7 +495,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the flat number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    var select = Utils.ReadLine("What is the flat number of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
                                     if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
@@ -481,7 +508,7 @@ namespace BookMook
                                         step = -1;
                                         break;
                                     }
-                                    if (select < 0) throw new Exception("Flat number can not be less than 0!");
+                                    if (select < 0) throw new Exception("Flat number can't be less than 0!");
 
                                     flatNumber = select;
                                     Console.Clear();
@@ -508,7 +535,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the room number of your place \u001b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    var select = Utils.ReadLine("What is the room number of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
                                     if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
@@ -521,7 +548,7 @@ namespace BookMook
                                         step = -1;
                                         break;
                                     }
-                                    if (select < 0) throw new Exception("Room number can not be less than 0!");
+                                    if (select < 0) throw new Exception("Room number can't be less than 0!");
 
                                     roomNumber = select;
                                     Console.Clear();
@@ -708,7 +735,7 @@ namespace BookMook
                             Thread.Sleep(1000);
                             Console.Clear();
 
-                            Place new_place = new((ReservationManager.PlaceList.Last().GetId()+1), placeType, this, name, price, address, guestLimit, flatNumber, roomNumber, hasFreeWifi, hasSpareBathroom, isSmokingAllowed, hasPool, hasGarden, hasPrivateBeach, hasParkingArea);
+                            Place new_place = new(ReservationManager.GetPlaceList().Last().GetId() + 1, placeType, this, name, price, address, guestLimit, flatNumber, roomNumber, hasFreeWifi, hasSpareBathroom, isSmokingAllowed, hasPool, hasGarden, hasPrivateBeach, hasParkingArea);
                             AddPlace(new_place);
 
                             Utils.Info("Press any key to proceed...");
@@ -731,7 +758,7 @@ namespace BookMook
 
         public string GetInformation()
         {
-            return "\x1b[31;1;4m-----------Renter (" + Id + ")---------\u001b[37;24m" +
+            return "\x1b[31;1;4m-----------Renter (" + Id + ")---------\x1b[37;24m" +
                 "\nName:" + Name +
                 "\nEmail address: " + EmailAddress +
                 "\n\x1b[31;1;4m------------------------------\x1b[37;24m";

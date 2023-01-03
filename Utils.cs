@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using static BookMook.Utils;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace BookMook
 {
@@ -107,17 +107,17 @@ namespace BookMook
 
         public static void Question(string message)
         {
-            Console.WriteLine("\x1b[36;1m[?] \u001b[37;24m" + message);
+            Console.WriteLine("\x1b[36;1m[?] \x1b[37;24m" + message);
         }
 
         public static void Info(string message)
         {
-            Console.WriteLine("\x1b[32;1m[*] \u001b[37;24m" + message);
+            Console.WriteLine("\x1b[32;1m[*] \x1b[37;24m" + message);
         }
 
         public static void Error(string message)
         {
-            Console.WriteLine("\x1b[31;1m[!] \u001b[37;24m" + message);
+            Console.WriteLine("\x1b[31;1m[!] \x1b[37;24m" + message);
         }
 
         public static dynamic? ReadLine(string question, Type desiredType)
@@ -153,6 +153,23 @@ namespace BookMook
                         return boolResult;
                     }
                 }
+                else if (desiredType == typeof(DateTime))
+                {
+                    // Specify the dd/MM/yyyy date format
+                    string[] dateFormats = { "dd/MM/yyyy" };
+                    if (DateTime.TryParseExact(input, dateFormats, CultureInfo.InvariantCulture,
+                                               DateTimeStyles.None, out DateTime dateTimeResult))
+                    {
+                        return dateTimeResult;
+                    }
+                }
+                else if (desiredType == typeof(double))
+                {
+                    if (double.TryParse(input, out double doubleResult))
+                    {
+                        return doubleResult;
+                    }
+                }
                 else
                 {
                     return input;
@@ -160,11 +177,71 @@ namespace BookMook
             }
             catch (Exception ex)
             {
-                Error("An error occurred: " + ex.Message);
+                if (desiredType == typeof(DateTime))
+                {
+                    Error("Invalid DateTime format. Please use the format dd/MM/yyyy.");
+                }
+                else
+                {
+                    Error("An error occurred: " + ex.Message);
+                }
                 return null;
             }
 
             return null;
+        }
+
+        public static DateTime? IsValidDate(string str)
+        {
+            // Specify the dd/MM/yyyy date format
+            string[] dateFormats = { "dd/MM/yyyy" };
+
+            if (DateTime.TryParseExact(str, dateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeResult))
+            {
+                return dateTimeResult;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static void Logo()
+        {
+            Console.Clear();
+            Console.CursorVisible = false;
+
+            string logo = "\x1b[36m" + @"
+▀█████████▄   ▄██████▄   ▄██████▄     ▄█   ▄█▄   ▄▄▄▄███▄▄▄▄    ▄██████▄   ▄██████▄     ▄█   ▄█▄ 
+  ███    ███ ███    ███ ███    ███   ███ ▄███▀ ▄██▀▀▀███▀▀▀██▄ ███    ███ ███    ███   ███ ▄███▀ 
+  ███    ███ ███    ███ ███    ███   ███▐██▀   ███   ███   ███ ███    ███ ███    ███   ███▐██▀   
+ ▄███▄▄▄██▀  ███    ███ ███    ███  ▄█████▀    ███   ███   ███ ███    ███ ███    ███  ▄█████▀    
+▀▀███▀▀▀██▄  ███    ███ ███    ███ ▀▀█████▄    ███   ███   ███ ███    ███ ███    ███ ▀▀█████▄    
+  ███    ██▄ ███    ███ ███    ███   ███▐██▄   ███   ███   ███ ███    ███ ███    ███   ███▐██▄   
+  ███    ███ ███    ███ ███    ███   ███ ▀███▄ ███   ███   ███ ███    ███ ███    ███   ███ ▀███▄ 
+▄█████████▀   ▀██████▀   ▀██████▀    ███   ▀█▀  ▀█   ███   █▀   ▀██████▀   ▀██████▀    ███   ▀█▀ 
+                                     ▀                                                 ▀         
+Welcome to the BookMook, press any key to proceed...
+";
+
+            using (StringReader reader = new(logo))
+            {
+                string? line = string.Empty;
+                int verticalStart = (Console.WindowHeight - logo.Split("\n").Length) / 2;
+                do
+                {
+                    line = reader.ReadLine();
+                    if (line != null)
+                    {
+                        Console.SetCursorPosition((Console.WindowWidth - line.Length) / 2, verticalStart);
+                        Console.WriteLine(line);
+                        ++verticalStart;
+                    }
+                } while (line != null);
+            }
+
+            Console.ResetColor();
+            Console.ReadKey(true);
         }
     }
 }

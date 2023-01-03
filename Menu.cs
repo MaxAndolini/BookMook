@@ -20,7 +20,7 @@
             Console.CursorVisible = false;
 
             Console.WriteLine("\x1b[37;1;4m" + Prompt + "\n");
-            Utils.Info("\x1b[37;1;4mUse \u001b[32m▲\u001b[37m and \u001b[32m▼\u001b[37m to navigate and press \u001b[32mEnter/Return\x1b[37m to select:\u001b[24m");
+            Utils.Info("\x1b[37;1;4mUse \x1b[32m▲\x1b[37m and \x1b[32m▼\x1b[37m to navigate and press \x1b[32mEnter/Return\x1b[37m to select:\x1b[24;0m");
 
             for (int i = 0; i < Options.Length; i++)
             {
@@ -29,18 +29,14 @@
 
                 if (i == SelectedIndex)
                 {
-                    prefix = "► \u001b[32m";
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.BackgroundColor = ConsoleColor.White;
+                    prefix = "\u001b[30;47m► \x1b[32m" + current;
                 }
                 else
                 {
-                    prefix = "  ";
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.BackgroundColor = ConsoleColor.Black;
+                    prefix = "\x1b[37;40m  " + current;
                 }
 
-                Console.WriteLine(prefix + current);
+                Console.WriteLine(prefix + "\x1b[0m");
             }
 
             Console.ResetColor();
@@ -82,8 +78,8 @@
             }
 
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
+            //Console.ForegroundColor = ConsoleColor.White;
+            //Console.BackgroundColor = ConsoleColor.Black;
 
             return SelectedIndex;
         }

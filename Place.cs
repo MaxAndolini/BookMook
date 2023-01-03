@@ -267,7 +267,7 @@
 
         public override string ToString()
         {
-            return "\x1b[31;1;4m-----------Place (" + Id + ")---------\u001b[37;24m" +
+            return "\x1b[31;1;4m-----------Place (" + Id + ")---------\x1b[37;24m" +
                 "\nName : " + GetName() +
                 "\nPlace Type : " + GetType() +
                 "\nPrice : " + GetPrice() +
