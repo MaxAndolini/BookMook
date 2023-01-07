@@ -67,7 +67,7 @@
                 {
                     try
                     {
-                        var select = Utils.ReadLine("How much money do you want to deposit? \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                        var select = Utils.ReadLine("How much money do you want to deposit? \x1b[32m(Quit: -1)\x1b[37m:\x1b[24m", typeof(int));
                         if (select == null) throw new Exception("You must write a number!");
                         if (select == -1)
                         {
@@ -99,7 +99,7 @@
                 {
                     try
                     {
-                        var select = Utils.ReadLine("How much money do you want to withdraw? \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                        var select = Utils.ReadLine("How much money do you want to withdraw? \x1b[32m(Quit: -1)\x1b[37m:\x1b[24m", typeof(int));
                         if (select == null) throw new Exception("You must write a number!");
                         if (select == -1)
                         {

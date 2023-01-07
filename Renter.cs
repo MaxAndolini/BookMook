@@ -137,7 +137,7 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:\x1b[24m", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
@@ -198,7 +198,7 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:\x1b[24m", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
@@ -262,18 +262,18 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:\x1b[24m", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || listReservations.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
 
                             Menu deleteMenu = new(listReservations[select].ToString() + "\n\x1b[37;1;4mDo you want to cancel id (" + select + ") reservation?", new string[] { "Yes", "No" });
                             int deleteIndex = deleteMenu.Run();
-
+                            
                             if (deleteIndex == 0) ReservationManager.RemoveReservation(listReservations[select]);
                             Thread.Sleep(1000);
                             Console.Clear();
-
+                            
                             break;
                         }
                         catch (Exception ex)
@@ -333,7 +333,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the name of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                    var select = Utils.ReadLine("What is the name of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(string));
                                     if (select == null) throw new Exception("You must write a string!");
                                     if (select == "-1")
                                     {
@@ -374,7 +374,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the price per day of your place (Ex: 55.99) \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(double));
+                                    var select = Utils.ReadLine("What is the price per day of your place (Ex: 55.99) \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(double));
                                     if (select == null) throw new Exception("You must write a double!");
                                     if (select == -1)
                                     {
@@ -414,7 +414,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the address of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                    var select = Utils.ReadLine("What is the address of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(string));
                                     if (select == null) throw new Exception("You must write a string!");
                                     if (select == "-1")
                                     {
@@ -455,7 +455,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the guest limit of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    var select = Utils.ReadLine("What is the guest limit of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(int));
                                     if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
@@ -495,7 +495,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the flat number of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    var select = Utils.ReadLine("What is the flat number of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(int));
                                     if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {
@@ -535,7 +535,7 @@ namespace BookMook
                             {
                                 try
                                 {
-                                    var select = Utils.ReadLine("What is the room number of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                    var select = Utils.ReadLine("What is the room number of your place \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(int));
                                     if (select == null) throw new Exception("You must write a number!");
                                     if (select == -1)
                                     {

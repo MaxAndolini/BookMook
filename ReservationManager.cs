@@ -83,8 +83,13 @@
                 return;
             }
 
+            double fee = reservation.GetTotalPrice() - reservation.GetTotalPrice() * 0.9;
+            reservation.GetRentee().GetWallet().IncreaseMoney(reservation.GetTotalPrice() * 0.9);
+            reservation.GetRenter().GetWallet().DecreaseMoney(reservation.GetTotalPrice() * 0.9);
+            reservation.GetRentee().RemoveReservation(reservation);
             ReservationList.Remove(reservation);
-            if (message) Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed.");
+
+            if (message) Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed. (The " + fee + " amount of fee deducted!)");
         }
 
         public static void RemoveReservation(int reservationId, bool message = false)

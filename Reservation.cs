@@ -118,16 +118,21 @@
 
         public override string ToString()
         {
-            return "\x1b[31;1;4m-----------Reservation (" + Id + ")---------\x1b[37;24m\n" +
-                Place.ToString() + "\n" +
-                Renter.GetInformation() + "\n" +
-                Rentee.GetInformation() +
+            return "\x1b[31;1;4m-----------Reservation (" + Id + ")---------\x1b[37;24m" +
+                "\n" + Place.ToString() +
+                "\n" + Renter.GetInformation() +
+                "\n" + Rentee.GetInformation() +
+                "\nNumber of Guests : " + NumberOfGuests +
+                "\nUser Special Request : " + UserSpecialRequest +
+                "\nStart Date : " + StartDate.ToString("dd/MM/yyyy") +
+                "\nEnd Date : " + EndDate.ToString("dd/MM/yyyy") +
+                "\nTotal Price : " + TotalPrice +
                 "\n\x1b[31;1;4m------------------------------\x1b[37;24m";
         }
 
         public string GetShortInfo()
         {
-            return "Place: " + Place.GetName() + ", Renter: " + Renter.GetName() + ", Rentee: " + Rentee.GetName() + ", Reservation Id: " + Id;
+            return "Place: " + Place.GetName() + ", Renter: " + Renter.GetName() + ", Rentee: " + Rentee.GetName()  + ", Reservation Days: " + StartDate.ToString("dd/MM/yyyy") + " - " + EndDate.ToString("dd/MM/yyyy") + ", Reservation Id: " + Id;
         }
     }
 }

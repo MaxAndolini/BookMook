@@ -19,7 +19,7 @@
             if (ReservationManager.RenterList.Count == 0)
             {
                 Wallet wallet1 = new(0, 0);
-                Wallet wallet2 = new(0, 50000);
+                Wallet wallet2 = new(1, 50000);
 
                 CreditCard creditCard1 = new(0, CreditCardBrand.Visa, "4321-4321-4321-4321", "Test Deneme", new DateTime(2024, 05, 31), 026, 031);
                 CreditCard creditCard2 = new(0, CreditCardBrand.Visa, "1234-1234-1234-1234", "Test Deneme", new DateTime(2024, 05, 31), 026, 031);
@@ -37,11 +37,16 @@
             }
             else
             {
+                Renter renter = ReservationManager.RenterList[0];
+                renter.ShowMenu();
+
+
                 Rentee rentee = ReservationManager.RenteeList[0];
                 rentee.ShowMenu();
 
-                Renter renter = ReservationManager.RenterList[0];
                 renter.ShowMenu();
+
+
             }
 
 

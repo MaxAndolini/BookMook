@@ -44,30 +44,10 @@ namespace BookMook
 
         public void RemoveReservation(Reservation reservation)
         {
-            if (!MyReservations.Contains(reservation))
+            if (MyReservations.Contains(reservation))
             {
-                Utils.Error("Reservation Id (" + reservation.GetId() + ") isn't already exist!");
-                return;
+                MyReservations.Remove(reservation);
             }
-            double fee = reservation.GetTotalPrice() - reservation.GetTotalPrice() * 0.9;
-            reservation.GetRentee().GetWallet().IncreaseMoney(reservation.GetTotalPrice() * 0.9);
-            reservation.GetRenter().GetWallet().DecreaseMoney(reservation.GetTotalPrice() * 0.9);
-            MyReservations.Remove(reservation);
-            ReservationManager.RemoveReservation(reservation);
-            Utils.Info("Reservation Id (" + reservation.GetId() + ") is successfully removed. (The " + fee + " amount of fee deducted!)");
-        }
-
-        public void RemoveReservation(int reservationId)
-        {
-            var reservation = GetReservation(reservationId);
-
-            if (reservation == null)
-            {
-                Utils.Error("Reservation couldn't found!");
-                return;
-            }
-
-            RemoveReservation(reservation);
         }
 
         public Reservation? GetReservation(int reservationId)
@@ -137,7 +117,7 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:\x1b[24m", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || listPlaces.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
@@ -176,7 +156,7 @@ namespace BookMook
                                     {
                                         try
                                         {
-                                            var select2 = Utils.ReadLine("What is the start date of your reservation (day/month/year) \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                            var select2 = Utils.ReadLine("What is the start date of your reservation (day/month/year) \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(string));
                                             if (select2 == null) throw new Exception("You must write a date!");
                                             if (select2 == "-1")
                                             {
@@ -219,7 +199,7 @@ namespace BookMook
                                     {
                                         try
                                         {
-                                            var select2 = Utils.ReadLine("What is the end date of your reservation (day/month/year) \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                            var select2 = Utils.ReadLine("What is the end date of your reservation (day/month/year) \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(string));
                                             if (select2 == null) throw new Exception("You must write a date!");
                                             if (select2 == "-1")
                                             {
@@ -265,11 +245,11 @@ namespace BookMook
                                         try
                                         {
                                             string text = "\x1b[31;1;4m-----------Reservation Details---------\x1b[37;24m" +
-                                                current_place.ToString() + "\n" +
-                                                "Start Date : " + startDate.ToString("dd/MM/yyyy") + "\n" +
-                                                "End Date : " + endDate.ToString("dd/MM/yyyy") +
+                                                "\n" + current_place.ToString() +
+                                                "\nStart Date : " + startDate.ToString("dd/MM/yyyy") +
+                                                "\nEnd Date : " + endDate.ToString("dd/MM/yyyy") +
                                                 "\n\x1b[31;1;4m------------------------------\x1b[37;24m";
-                                            var select2 = Utils.ReadLine(text + "\n\x1b[37;1;4mWhat is the the number of the guests? \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(int));
+                                            var select2 = Utils.ReadLine(text + "\n\x1b[37;1;4mWhat is the number of the guests? \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(int));
                                             if (select2 == null) throw new Exception("You must write a number!");
                                             if (select2 == -1)
                                             {
@@ -308,11 +288,11 @@ namespace BookMook
                                 if (step == 4)
                                 {
                                     string text = "\x1b[31;1;4m-----------Reservation Details---------\x1b[37;24m" +
-                                        current_place.ToString() + "\n" +
-                                        "Start Date : " + startDate.ToString("dd/MM/yyyy") + "\n" +
-                                        "End Date : " + endDate.ToString("dd/MM/yyyy") + "\n" +
-                                        "Number of Guests : " + numberOfGuests + "\n" +
-                                        "Price : " + price +
+                                        "\n" + current_place.ToString() +
+                                        "\nStart Date : " + startDate.ToString("dd/MM/yyyy") +
+                                        "\nEnd Date : " + endDate.ToString("dd/MM/yyyy") +
+                                        "\nNumber of Guests : " + numberOfGuests +
+                                        "\nPrice : " + price +
                                         "\n\x1b[31;1;4m------------------------------\x1b[37;24m";
                                     Menu bookMenu = new(text + "\n\x1b[37;1;4mDo you want to book this place?", new string[] { "Yes", "No", "Back", "Quit" });
                                     int bookIndex = bookMenu.Run();
@@ -357,7 +337,7 @@ namespace BookMook
                                     {
                                         try
                                         {
-                                            var select2 = Utils.ReadLine("Please enter if you have any special request \x1b[32m(Back: -1, Quit: -2)\x1b[37m:", typeof(string));
+                                            var select2 = Utils.ReadLine("Please enter if you have any special request \x1b[32m(Back: -1, Quit: -2)\x1b[37m:\x1b[24m", typeof(string));
                                             if (select2 == null) throw new Exception("You must write a string!");
                                             if (select2 == "-1")
                                             {
@@ -450,7 +430,7 @@ namespace BookMook
                                 break;
                             }
 
-                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:", typeof(int));
+                            var select = Utils.ReadLine("Enter the id of place to see the detailed information \x1b[32m(Quit: -1)\x1b[37m:\x1b[24m", typeof(int));
                             if (select == null) throw new Exception("You must write a number!");
                             if (select == -1) break;
                             if (select < 0 || listReservations.Count - 1 < select) throw new Exception("Id (" + select + ") Place is not found!");
